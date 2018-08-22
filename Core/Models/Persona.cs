@@ -31,7 +31,20 @@ namespace Core.Models
         /// </summary>
         public void validate()
         {
-            
+            if (Rut == null)
+            {
+                throw new ModelException("Rut no puede ser null");
+            }
+
+            if (Nombre == null || Nombre.Length < 2)
+            {
+                throw new ModelException("Nombre no puede ser null o de tamanio inferior a 2");
+            }
+
+            if (Paterno == null || Paterno.Length < 2)
+            {
+                throw new ModelException("Apellido Paterno no puede ser null o tamanio inferior a 2");
+            }
         }
         
     }
