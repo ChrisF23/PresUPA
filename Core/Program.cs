@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Controllers;
 using Core.Models;
 using Newtonsoft.Json;
 
@@ -7,7 +8,7 @@ namespace Core
     /// <summary>
     /// 
     /// </summary>
-    class App
+    class Program
     {
 
         /// <summary>
@@ -43,8 +44,10 @@ namespace Core
             
             Console.WriteLine(persona);
             Console.WriteLine(ToJson(persona));
-
             
+            ISistema sistema = new Sistema();
+            sistema.Save(persona);
+
             ModelException modelException = new ModelException("Error en el modelo");
             // throw modelException;
         }
