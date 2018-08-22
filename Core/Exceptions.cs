@@ -7,6 +7,7 @@ namespace Core
     /// </summary>
     public class ModelException : Exception
     {
+        /// <inheritdoc />
         /// <summary>
         /// Contructor
         /// </summary>
