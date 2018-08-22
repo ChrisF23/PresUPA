@@ -39,7 +39,7 @@ namespace Core
                 Materno = "Astorga"
             };
             Console.WriteLine("Validating ..");
-            persona.validate();
+            persona.Validate();
             
             Console.WriteLine(persona);
             Console.WriteLine(ToJson(persona));

@@ -3,7 +3,7 @@ namespace Core.Models
     /// <summary>
     /// Clase que representa una Persona en el sistema de presupuesto.
     /// </summary>
-    public class Persona
+    public class Persona : IModel
     {
         
         /// <summary>
@@ -29,7 +29,7 @@ namespace Core.Models
         /// <summary>
         /// Validacion de los atributos de la clase.
         /// </summary>
-        public void validate()
+        public void Validate()
         {
             if (Rut == null)
             {
