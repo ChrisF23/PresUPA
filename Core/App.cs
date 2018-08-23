@@ -32,7 +32,7 @@ namespace Core
             // Repositorio de personas
             IRepository<Persona> personas = new RepositorySqlite<Persona>(sqliteDbContext);
             
-            // Sistema
+            // Sistema, realiza la inicializacion de la base de datos
             return new Sistema(personas);
             
         }
