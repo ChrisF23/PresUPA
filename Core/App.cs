@@ -64,7 +64,8 @@ namespace Core
                 Rut = "13014491-8",
                 Nombre = "Diego",
                 Paterno = "Urrutia",
-                Materno = "Astorga"
+                Materno = "Astorga",
+                Edad = 34
             };
             
             Console.WriteLine(per);

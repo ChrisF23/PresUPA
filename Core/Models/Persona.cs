@@ -24,6 +24,8 @@ namespace Core.Models
         /// Apellido materno.
         /// </summary>
         public string Materno { get; set; }
+        
+        public int Edad { get; set; }
 
         /// <summary>
         /// Validacion de los atributos de la clase.

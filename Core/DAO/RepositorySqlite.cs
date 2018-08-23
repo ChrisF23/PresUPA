@@ -49,6 +49,23 @@ namespace Core.DAO
             {
                 sb.Append(" ").Append(property.Name);
                 
+                TypeCode typeCode = Type.GetTypeCode(property.PropertyType);
+                Console.WriteLine("Type: " + typeCode);
+
+                switch (typeCode)
+                {
+                    case TypeCode.String:
+                        sb.Append(" TEXT");
+                        break;
+                    case TypeCode.Int16: // short
+                    case TypeCode.Int32: // integer
+                    case TypeCode.Int64: // long
+                        sb.Append(" INTEGER");
+                        break;
+                    default:
+                        throw new NotSupportedException("Tipo no soportado: " + typeCode);
+                }
+                
                 // Si el tipo es string, se usa "text"
                 if (property.PropertyType == typeof(string))
                 {
