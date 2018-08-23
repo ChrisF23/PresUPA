@@ -8,10 +8,6 @@ namespace Core
     public class ModelException : Exception
     {
         /// <inheritdoc />
-        /// <summary>
-        /// Contructor
-        /// </summary>
-        /// <param name="message">mensaje del error</param>
         public ModelException(string message) : base(message)
         {
         }
