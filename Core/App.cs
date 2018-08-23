@@ -65,7 +65,6 @@ namespace Core
                 Nombre = "Diego",
                 Paterno = "Urrutia",
                 Materno = "Astorga",
-                DateTime = DateTime.Now
             };
             
             Console.WriteLine(per);
