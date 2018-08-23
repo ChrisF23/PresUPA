@@ -1,6 +1,8 @@
 ﻿using System;
 using Core.Controllers;
+using Core.DAO;
 using Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Core
@@ -8,11 +10,34 @@ namespace Core
     /// <summary>
     /// 
     /// </summary>
-    class Program
+    public class Program
     {
 
         /// <summary>
-        /// 
+        /// Inicializa y construye el sistema.
+        /// </summary>
+        /// <returns></returns>
+        private static Sistema BuildSistema()
+        {
+            // Configuration de la base de datos (SQLite)
+            DbContextOptions<SqliteDbContext> options = new DbContextOptionsBuilder<SqliteDbContext>()
+                //.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .EnableSensitiveDataLogging()
+                .Options;
+
+            // El contexto por defecto utiliza sqlite.
+            SqliteDbContext sqliteDbContext = new SqliteDbContext(options);
+            
+            // Repositorio de personas
+            IRepository<Persona> personas = new RepositorySqlite<Persona>(sqliteDbContext);
+            
+            // Sistema
+            return new Sistema(personas);
+            
+        }
+
+        /// <summary>
+        /// Imprime un objeto en formato json.
         /// </summary>
         /// <param name="obj"></param>
         /// <typeparam name="T"></typeparam>
@@ -29,7 +54,8 @@ namespace Core
         /// <exception cref="ModelException"></exception>
         private static void Main(string[] args)
         {
-            Console.WriteLine("Starting ..");
+            Console.WriteLine("Building Sistema ..");
+            ISistema sistema = BuildSistema();
 
             Console.WriteLine("Creating Persona ..");
             Persona persona = new Persona()
@@ -39,17 +65,13 @@ namespace Core
                 Paterno = "Urrutia",
                 Materno = "Astorga"
             };
-            Console.WriteLine("Validating ..");
-            persona.Validate();
             
             Console.WriteLine(persona);
             Console.WriteLine(ToJson(persona));
-            
-            ISistema sistema = new Sistema();
+
+            // Save in the repository
             sistema.Save(persona);
 
-            ModelException modelException = new ModelException("Error en el modelo");
-            // throw modelException;
         }
     }
 }

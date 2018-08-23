@@ -1,70 +1,41 @@
 using Core.DAO;
 using Core.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Core.Controllers
 {
     /// <summary>
-    /// 
+    /// Implementacion de la interface ISistema.
     /// </summary>
-    public class Sistema : ISistema
+    public sealed class Sistema : ISistema
     {
-        // Repositorio de personas.
+        // Patron Repositorio, generalizado via Generics
+        // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/
         private readonly IRepository<Persona> _repositoryPersona;
 
         /// <summary>
-        /// Constructor del sistema
+        /// Inicializa los repositorios internos de la clase.
         /// </summary>
-        public Sistema()
+        public Sistema(IRepository<Persona> repositoryPersona)
         {
-            // Repositorio
-            _repositoryPersona = new Repository<Persona>(BuildDbContext());
+            // Setter!
+            _repositoryPersona = repositoryPersona;
 
-            // Creacion de la base de datos.
+            // Inicializacion del repositorio.
             _repositoryPersona.Initialize();
         }
 
-        private DbContext BuildDbContext()
-        {
-            // Base de datos en memoria
-            var options = new DbContextOptionsBuilder<SqliteContext>()
-                //.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .EnableSensitiveDataLogging()
-                .Options;
-            
-            return new SqliteContext(options);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="persona"></param>
+        /// <inheritdoc />
         public void Save(Persona persona)
         {
+            // Verificacion de nulidad
             if (persona == null)
             {
                 throw new ModelException("Persona es null");
             }
 
-            // Saving the Persona
+            // Saving the Persona en el repositorio.
+            // La validacion de los atributos ocurre en el repositorio.
             _repositoryPersona.Add(persona);
-        }
-        
-        /// <summary>
-        /// InMemory
-        /// </summary>
-        class SqliteContext : DbContext
-        {
-            public SqliteContext(DbContextOptions<SqliteContext> options) : base(options)
-            {
-                Database.EnsureDeleted();
-                Database.EnsureCreated();
-            }
-
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            {
-                optionsBuilder.UseSqlite(@"Data Source=database.db");
-            }
         }
     }
 }

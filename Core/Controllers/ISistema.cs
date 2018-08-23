@@ -8,9 +8,9 @@ namespace Core.Controllers
     public interface ISistema
     {
         /// <summary>
-        /// Almacena una persona en el sistema.
+        /// Operacion de sistema: Almacena una persona en el sistema.
         /// </summary>
-        /// <param name="persona"></param>
+        /// <param name="persona">Persona a guardar en el sistema.</param>
         void Save(Persona persona);
     }
 }

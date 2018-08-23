@@ -8,34 +8,36 @@ using Microsoft.EntityFrameworkCore;
 namespace Core.DAO
 {
     /// <summary>
-    /// 
+    /// Implementacion del IRepository generico.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class Repository<T> : IRepository<T> where T : IModel
+    /// <typeparam name="T">Clase que implementa IModel</typeparam>
+    public class RepositorySqlite<T> : IRepository<T> where T : IModel
     {
         /// <summary>
         /// Referencia a la base de datos.
         /// </summary>
-        protected readonly DbContext _dbContext;
+        protected readonly SqliteDbContext _sqliteDbContext;
 
         /// <summary>
-        /// Tipo de la clase.
+        /// Tipo (generico) de la clase.
         /// </summary>
         protected readonly Type _type = typeof(T);
 
-        /// <inheritdoc />
-        public Repository(DbContext context)
+        /// <summary>
+        /// Construccion del repositorio conectado a la base de datos.
+        /// </summary>
+        public RepositorySqlite(SqliteDbContext sqliteDbContext)
         {
-            _dbContext = context ?? throw new ArgumentException(nameof(context));
+            _sqliteDbContext = sqliteDbContext ?? throw new ArgumentException("Se requiere el contexto Sqlite");
         }
-
+        
         /// <inheritdoc />
         public void Initialize()
         {
             // Creacion del SQL de creacion de la tabla.
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             
-            sb.Append( _type.Name.ToLower()); // Nombre de la tabla (minuscula)
+            sb.Append(_type.Name.ToLower()); // Nombre de la tabla (minuscula)
             sb.Append(" (\n");
 
             // Ciclo para las propiedades de la clase
@@ -50,7 +52,7 @@ namespace Core.DAO
                     sb.Append(" text");
                 }
                 
-                // FIXME: Agregar los tipos que faltan
+                // FIXME: Agregar los tipos que faltan (Int, Char, Boolean, etc)
 
                 if (!properties.LastOrDefault().Equals(property))
                 {
@@ -63,15 +65,21 @@ namespace Core.DAO
             }
             sb.Append(");");
             
-            Console.WriteLine(sb.ToString());
-            _dbContext.Database.ExecuteSqlCommand(sb.ToString());
+            // Console.WriteLine(sb.ToString());
+            _sqliteDbContext.Database.ExecuteSqlCommand(sb.ToString());
 
         }
 
         /// <inheritdoc />
         public void Add(T entity)
         {
-            // Validation
+            // Validacion de nulidad
+            if (entity == null)
+            {
+                throw new ArgumentException("Entidad a guardar es null");
+            }
+            
+            // Validacion del IModel
             entity.Validate();
             
             // Creacion del SQL de insercion
@@ -104,9 +112,10 @@ namespace Core.DAO
             
             sb.Append(");");
             
-            Console.WriteLine(sb.ToString());
+            // Console.WriteLine(sb.ToString());
             
-            _dbContext.Database.ExecuteSqlCommand(sb.ToString());
+            // Ejecucion de la query en Sqlite
+            _sqliteDbContext.Database.ExecuteSqlCommand(sb.ToString());
         }
 
         /// <inheritdoc />
@@ -114,5 +123,6 @@ namespace Core.DAO
         {
             throw new NotImplementedException();
         }
+        
     }
 }
