@@ -5,6 +5,7 @@ namespace Core.DAO
 {
     /// <summary>
     /// Patron Repository para reemplazar a DAO (mas simple).
+    /// https://martinfowler.com/eaaCatalog/repository.html
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : IModel
