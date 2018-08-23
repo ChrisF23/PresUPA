@@ -3,7 +3,7 @@ namespace Core.Models
     /// <summary>
     /// Clase que representa una Persona en el sistema de presupuesto.
     /// </summary>
-    public class Persona : IModel
+    public sealed class Persona : IModel
     {
         
         /// <summary>
