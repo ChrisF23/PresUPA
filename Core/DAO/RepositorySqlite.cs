@@ -66,14 +66,6 @@ namespace Core.DAO
                         throw new NotSupportedException("Tipo no soportado: " + typeCode);
                 }
                 
-                // Si el tipo es string, se usa "text"
-                if (property.PropertyType == typeof(string))
-                {
-                    sb.Append(" text");
-                }
-                
-                // FIXME: Agregar los tipos que faltan (Int, Char, Boolean, etc)
-
                 if (!properties.LastOrDefault().Equals(property))
                 {
                     sb.Append(",");
