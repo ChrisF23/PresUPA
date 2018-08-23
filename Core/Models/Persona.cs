@@ -1,3 +1,5 @@
+using System;
+
 namespace Core.Models
 {
     /// <summary>
@@ -25,8 +27,6 @@ namespace Core.Models
         /// </summary>
         public string Materno { get; set; }
         
-        public int Edad { get; set; }
-
         /// <summary>
         /// Validacion de los atributos de la clase.
         /// </summary>

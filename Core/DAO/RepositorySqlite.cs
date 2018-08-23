@@ -62,6 +62,9 @@ namespace Core.DAO
                     case TypeCode.Int64: // long
                         sb.Append(" INTEGER");
                         break;
+                    case TypeCode.DateTime:
+                        sb.Append(" REAL");
+                        break;
                     default:
                         throw new NotSupportedException("Tipo no soportado: " + typeCode);
                 }
@@ -113,7 +116,27 @@ namespace Core.DAO
             sb.Append(") VALUES (\n");
             foreach (PropertyInfo property in properties)
             {
-                sb.Append(" '").Append(property.GetValue(entity,null)).Append("'");
+                sb.Append(" ");
+                
+                TypeCode typeCode = Type.GetTypeCode(property.PropertyType);
+                switch (typeCode)
+                {
+                    case TypeCode.String:
+                        sb.Append("'").Append(property.GetValue(entity, null)).Append("'");
+                        break;
+                    case TypeCode.Int16: // short
+                    case TypeCode.Int32: // integer
+                    case TypeCode.Int64: // long
+                        sb.Append(property.GetValue(entity, null));
+                        break;
+                    case TypeCode.DateTime:
+                        sb.Append(((DateTime) property.GetValue(entity, null)).Ticks);
+                        break;
+                    default:
+                        throw new NotSupportedException("Tipo no soportado: " + typeCode);
+                }
+                
+                
                 if (!properties.LastOrDefault().Equals(property))
                 {
                     sb.Append(",");
@@ -174,8 +197,24 @@ namespace Core.DAO
                                 // Reflection ?!?
                                 PropertyInfo propertyInfo = _type.GetProperty(name);
                                 
+                                TypeCode typeCode = Type.GetTypeCode(propertyInfo.PropertyType);
+                                switch (typeCode)
+                                {
+                                        case TypeCode.Int16:
+                                        case TypeCode.Int32:
+                                        case TypeCode.Int64:
+                                        case TypeCode.String:
+                                            propertyInfo.SetValue(instance, Convert.ChangeType(value, propertyInfo.PropertyType), null);
+                                            break;
+                                        case TypeCode.DateTime:
+                                            long time = Convert.ToInt64(value);
+                                            propertyInfo.SetValue(instance, Convert.ChangeType(new DateTime(time), propertyInfo.PropertyType), null);
+                                            break;
+                                        default:
+                                            throw new NotSupportedException("Tipo no soportado: " + typeCode);
+                                }
+                                
                                 // propertyInfo.SetValue(instance, value, null);
-                                propertyInfo.SetValue(instance, Convert.ChangeType(value, propertyInfo.PropertyType), null);
                                 
                             }
                             
