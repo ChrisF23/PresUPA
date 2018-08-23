@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using Core.Models;
 
 namespace Core.DAO
@@ -7,7 +7,7 @@ namespace Core.DAO
     /// Patron Repository para reemplazar a DAO (mas simple).
     /// https://martinfowler.com/eaaCatalog/repository.html
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Clase generica que implemente la interface IModel</typeparam>
     public interface IRepository<T> where T : IModel
     {
         /// <summary>
@@ -24,7 +24,7 @@ namespace Core.DAO
         /// <summary>
         /// Obtiene todas las entidades en el sistema.
         /// </summary>
-        /// <returns></returns>
-        IEnumerable All();
+        /// <returns>the List of T</returns>
+        IList<T> GetAll();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Controllers;
 using Core.DAO;
 using Core.Models;
@@ -10,7 +11,7 @@ namespace Core
     /// <summary>
     /// 
     /// </summary>
-    public class Program
+    public class App
     {
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Core
         /// <param name="obj"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static string ToJson<T>(T obj)
+        public static string ToJson<T>(T obj)
         { 
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
@@ -58,7 +59,7 @@ namespace Core
             ISistema sistema = BuildSistema();
 
             Console.WriteLine("Creating Persona ..");
-            Persona persona = new Persona()
+            Persona per = new Persona()
             {
                 Rut = "13014491-8",
                 Nombre = "Diego",
@@ -66,11 +67,21 @@ namespace Core
                 Materno = "Astorga"
             };
             
-            Console.WriteLine(persona);
-            Console.WriteLine(ToJson(persona));
+            Console.WriteLine(per);
+            Console.WriteLine(ToJson(per));
 
             // Save in the repository
-            sistema.Save(persona);
+            sistema.Save(per);
+
+            IList<Persona> personas = sistema.GetPersonas();
+            Console.WriteLine("Size: " + personas.Count);
+            
+            foreach (Persona persona in personas)
+            {
+                Console.WriteLine("Persona = " + ToJson(persona));    
+            }
+            
+            Console.WriteLine("Done.");
 
         }
     }

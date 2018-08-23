@@ -5,22 +5,21 @@ namespace Core.Models
     /// </summary>
     public sealed class Persona : IModel
     {
-        
         /// <summary>
         /// Identificador unico.
         /// </summary>
         public string Rut { get; set; }
-        
+
         /// <summary>
         /// Primer y segundo (optativo) nombre de la persona.
         /// </summary>
         public string Nombre { get; set; }
-        
+
         /// <summary>
         /// Apellido paterno.
         /// </summary>
         public string Paterno { get; set; }
-        
+
         /// <summary>
         /// Apellido materno.
         /// </summary>
@@ -46,6 +45,5 @@ namespace Core.Models
                 throw new ModelException("Apellido Paterno no puede ser null o tamanio inferior a 2");
             }
         }
-        
     }
 }

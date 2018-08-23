@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core.Models;
 
 namespace Core.Controllers
@@ -12,5 +13,11 @@ namespace Core.Controllers
         /// </summary>
         /// <param name="persona">Persona a guardar en el sistema.</param>
         void Save(Persona persona);
+
+        /// <summary>
+        /// Obtiene todas las personas del sistema.
+        /// </summary>
+        /// <returns>The IList of Persona</returns>
+        IList<Persona> GetPersonas();
     }
 }

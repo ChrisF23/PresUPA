@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Core.DAO;
 using Core.Models;
 
@@ -18,7 +20,7 @@ namespace Core.Controllers
         public Sistema(IRepository<Persona> repositoryPersona)
         {
             // Setter!
-            _repositoryPersona = repositoryPersona;
+            _repositoryPersona = repositoryPersona ?? throw new ArgumentException("Se requiere el repositorio de personas");
 
             // Inicializacion del repositorio.
             _repositoryPersona.Initialize();
@@ -36,6 +38,12 @@ namespace Core.Controllers
             // Saving the Persona en el repositorio.
             // La validacion de los atributos ocurre en el repositorio.
             _repositoryPersona.Add(persona);
+        }
+
+        /// <inheritdoc />
+        public IList<Persona> GetPersonas()
+        {
+            return _repositoryPersona.GetAll();
         }
     }
 }
