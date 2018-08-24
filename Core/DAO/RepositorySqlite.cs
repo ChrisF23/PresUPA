@@ -40,17 +40,16 @@ namespace Core.DAO
             // Creacion del SQL de creacion de la tabla.
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             
-            sb.Append(_type.Name); // Nombre de la tabla (minuscula)
+            sb.Append(_type.Name); // Nombre de la tabla
             sb.Append(" (\n");
 
             // Ciclo para las propiedades de la clase
-            var properties = _type.GetProperties();
-            foreach (var property in properties)
+            PropertyInfo[] properties = _type.GetProperties();
+            foreach (PropertyInfo property in properties)
             {
                 sb.Append(" ").Append(property.Name);
                 
                 TypeCode typeCode = Type.GetTypeCode(property.PropertyType);
-                Console.WriteLine("Type: " + typeCode);
 
                 switch (typeCode)
                 {
@@ -76,11 +75,13 @@ namespace Core.DAO
 
                 sb.Append("\n");
 
-                // Console.WriteLine(property.Name + " --> " + Type.GetTypeCode(property.PropertyType));
             }
             sb.Append(");");
-            
+
+            // TODO: Remover mensajes de debug
             Console.WriteLine(sb.ToString());
+            
+            // Ejecucion del SQL en el backend
             _sqliteDbContext.Database.ExecuteSqlCommand(sb.ToString());
 
         }
@@ -101,7 +102,7 @@ namespace Core.DAO
             StringBuilder sb = new StringBuilder("INSERT INTO ");
             sb.Append( _type.Name).Append(" (\n");
 
-            var properties = _type.GetProperties();
+            PropertyInfo[] properties = _type.GetProperties();
             foreach (PropertyInfo property in properties)
             {
                 sb.Append(" ").Append(property.Name);
@@ -147,6 +148,7 @@ namespace Core.DAO
             
             sb.Append(");");
             
+            // TODO: Eliminar mensaje de debug
             Console.WriteLine(sb.ToString());
             
             // Ejecucion de la query en Sqlite
@@ -190,7 +192,7 @@ namespace Core.DAO
                                 // Nombre, tipo y valor
                                 string name = reader.GetName(i);                                
                                 string type = reader.GetDataTypeName(i);
-                                var value = reader.GetValue(i);
+                                object value = reader.GetValue(i);
                                 
                                 // Console.WriteLine($"Row: {name} of type: {type} has value: {value}");
                                 
@@ -213,8 +215,6 @@ namespace Core.DAO
                                         default:
                                             throw new NotSupportedException("Tipo no soportado: " + typeCode);
                                 }
-                                
-                                // propertyInfo.SetValue(instance, value, null);
                                 
                             }
                             
