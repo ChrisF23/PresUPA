@@ -2,7 +2,7 @@ using System;
 using Core.Models;
 using Xunit;
 
-namespace Core.UniTest.Models
+namespace TestCore.Models
 {
     /// <summary>
     /// Testing de la clase Persona.
