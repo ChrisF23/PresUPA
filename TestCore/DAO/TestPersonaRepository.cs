@@ -12,7 +12,7 @@ namespace TestCore.DAO
     public sealed class TestPersonaRepository
     {
         [Fact]
-        public void MainTest()
+        public void PersonaSavingTest()
         {
             // Contexto
             DbContext dbContext = BuildTestModelContext();

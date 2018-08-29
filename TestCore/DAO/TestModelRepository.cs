@@ -4,15 +4,31 @@ using Core;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TestCore.DAO
 {
     /// <summary>
     /// Test del repositorio EF
     /// </summary>
-    public sealed class TestModelRepository
+    public class TestModelRepository
     {
+
+        /// <summary>
+        /// Logger de la clase
+        /// </summary>
+        private readonly ITestOutputHelper _output;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="output"></param>
+        public TestModelRepository(ITestOutputHelper output)
+        {
+            _output = output ?? throw new ArgumentException("Se requiere la consola");
+        }
 
         /// <summary>
         /// Prueba de la clase completa.
@@ -20,6 +36,8 @@ namespace TestCore.DAO
         [Fact]
         public void MainTest()
         {
+            _output.WriteLine("Starting test ..");
+            
             DbContext dbContext = BuildTestModelContext();
             IRepository<Entidad> repo = new ModelRepository<Entidad>(dbContext);
 
@@ -34,6 +52,9 @@ namespace TestCore.DAO
                     FechaDeAniversario = DateTime.Now,
                     NombreDeLaEntidad = "Este es mi nombre"
                 };
+                
+                // Debug to output
+                _output.WriteLine(Utils.ToJson(entidad));
     
                 // El id tiene que ser 0
                 Assert.True(entidad.Id == 0, "Id es != de 0");
@@ -73,6 +94,8 @@ namespace TestCore.DAO
                 Entidad entidad = repo.GetById(-1);
                 Assert.Null(entidad);
             }
+            
+            _output.WriteLine("Test ended!");
             
         }
 
