@@ -4,7 +4,6 @@ using Core.Controllers;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Core
 {
@@ -20,36 +19,20 @@ namespace Core
         /// <returns></returns>
         private static Sistema BuildSistema()
         {
-            // Configuration de la base de datos (SQLite)
-            DbContextOptions<SqliteDbContext> options = new DbContextOptionsBuilder<SqliteDbContext>()
-                //.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            DbContextOptions<ModelDbContext> options = new DbContextOptionsBuilder<ModelDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .EnableSensitiveDataLogging()
                 .Options;
-
-            // El contexto por defecto utiliza sqlite.
-            SqliteDbContext sqliteDbContext = new SqliteDbContext(options);
             
-            // Repositorio de personas
-            IRepository<Persona> personas = new RepositorySqliteRaw<Persona>(sqliteDbContext);
+            DbContext dbContext = new ModelDbContext(options);
             
-            // Sistema, realiza la inicializacion de la base de datos
+            IRepository<Persona> personas = new ModelRepository<Persona>(dbContext);
+            
             return new Sistema(personas);
-            
-        }
-
-        /// <summary>
-        /// Imprime un objeto en formato json.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static string ToJson<T>(T obj)
-        { 
-            return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
         
         /// <summary>
-        /// 
+        /// Punto de entrada de la aplicacion.
         /// </summary>
         /// <param name="args"></param>
         /// <exception cref="ModelException"></exception>
@@ -68,7 +51,7 @@ namespace Core
             };
             
             Console.WriteLine(per);
-            Console.WriteLine(ToJson(per));
+            Console.WriteLine(Utils.ToJson(per));
 
             // Save in the repository
             sistema.Save(per);
@@ -78,7 +61,7 @@ namespace Core
             
             foreach (Persona persona in personas)
             {
-                Console.WriteLine("Persona = " + ToJson(persona));    
+                Console.WriteLine("Persona = " + Utils.ToJson(persona));    
             }
             
             Console.WriteLine("Done.");

@@ -5,7 +5,7 @@ namespace Core.Models
     /// <summary>
     /// Clase que representa una Persona en el sistema de presupuesto.
     /// </summary>
-    public sealed class Persona : IModel
+    public sealed class Persona : BaseEntity
     {
         /// <summary>
         /// Identificador unico.
@@ -30,7 +30,7 @@ namespace Core.Models
         /// <summary>
         /// Validacion de los atributos de la clase.
         /// </summary>
-        public void Validate()
+        public override void Validate()
         {
             if (Rut == null)
             {

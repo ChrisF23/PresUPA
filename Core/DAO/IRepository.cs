@@ -7,8 +7,8 @@ namespace Core.DAO
     /// Patron Repository para reemplazar a DAO (mas simple).
     /// https://martinfowler.com/eaaCatalog/repository.html
     /// </summary>
-    /// <typeparam name="T">Clase generica que implemente la interface IModel</typeparam>
-    public interface IRepository<T> where T : IModel
+    /// <typeparam name="T">Clase derivada de BaseEntity</typeparam>
+    public interface IRepository<T> where T : BaseEntity
     {
         /// <summary>
         /// Inicializa el repositorio para guardar las entidades. Ej. crear la tabla SQL.
