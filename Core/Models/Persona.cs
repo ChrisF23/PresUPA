@@ -1,11 +1,9 @@
-using System;
-
 namespace Core.Models
 {
     /// <summary>
     /// Clase que representa una Persona en el sistema de presupuesto.
     /// </summary>
-    public sealed class Persona : BaseEntity
+    public class Persona : BaseEntity
     {
         /// <summary>
         /// Identificador unico.
@@ -26,7 +24,7 @@ namespace Core.Models
         /// Apellido materno.
         /// </summary>
         public string Materno { get; set; }
-        
+
         /// <summary>
         /// Validacion de los atributos de la clase.
         /// </summary>

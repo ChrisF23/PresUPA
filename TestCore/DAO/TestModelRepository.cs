@@ -22,39 +22,56 @@ namespace TestCore.DAO
         {
             DbContext dbContext = BuildTestModelContext();
             IRepository<Entidad> repo = new ModelRepository<Entidad>(dbContext);
-            
-            // Entidad de prueba
-            Entidad entidad = new Entidad()
-            {
-                Cortito = 12,
-                Largo = 120000000,
-                Valor = 123000,
-                FechaDeAniversario = DateTime.Now,
-                NombreDeLaEntidad = "Este es mi nombre"
-            };
-            
-            // El id tiene que ser 0
-            Assert.True(entidad.Id == 0, "Id es != de 0");
-            
-            // Agrego la entidad
-            repo.Add(entidad);
-            
-            // El id tiene que ser 1 (autoincrease)
-            Assert.True(entidad.Id == 1, "Id es != 1");
-            
-            // Busqueda de las entidades
-            IList<Entidad> entidades = repo.GetAll();
-            
-            // DEBE existir el elemento que se ingreso.
-            Assert.Equal(1, entidades.Count);
-            
-            // El id de la entidad en la base de datos debe ser igual a 1
-            Assert.True(entidades[0].Id == 1, "Id es != 1");
 
-            // Ciclo para obtener todos los elementos en el repositorio
-            foreach (Entidad e in entidades)
+            // Test add
+            {            
+                // Entidad de prueba
+                Entidad entidad = new Entidad()
+                {
+                    Cortito = 12,
+                    Largo = 120000000,
+                    Valor = 123000,
+                    FechaDeAniversario = DateTime.Now,
+                    NombreDeLaEntidad = "Este es mi nombre"
+                };
+    
+                // El id tiene que ser 0
+                Assert.True(entidad.Id == 0, "Id es != de 0");
+    
+                // Agrego la entidad
+                repo.Add(entidad);
+    
+                // El id tiene que ser 1 (autoincrease)
+                Assert.True(entidad.Id == 1, "Id es != 1");
+            }
+
+            // Busqueda de las entidades
             {
-                Console.WriteLine(Utils.ToJson(e));
+                IList<Entidad> entidades = repo.GetAll();
+
+                // DEBE existir el elemento que se ingreso.
+                Assert.Equal(1, entidades.Count);
+
+                // El id de la entidad en la base de datos debe ser igual a 1
+                Assert.True(entidades[0].Id == 1, "Id es != 1");
+
+                // Ciclo para obtener todos los elementos en el repositorio
+                foreach (Entidad e in entidades)
+                {
+                    Console.WriteLine(Utils.ToJson(e));
+                }
+            }
+
+            // Get by id (found)
+            {
+                Entidad entidad = repo.GetById(1);
+                Assert.NotNull(entidad);
+            }
+            
+            // Get by id (not found)
+            {
+                Entidad entidad = repo.GetById(-1);
+                Assert.Null(entidad);
             }
             
         }

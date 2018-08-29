@@ -15,7 +15,7 @@ namespace Core.DAO
         /// <summary>
         /// Referencia a la base de datos.
         /// </summary>
-        private readonly DbContext _dbContext;
+        protected readonly DbContext _dbContext;
 
         /// <summary>
         /// Tipo especifico de la clase.
@@ -40,6 +40,9 @@ namespace Core.DAO
         /// <inheritdoc />
         public void Add(T entity)
         {
+            // Validacion de la entidad antes de ingresar a la bd
+            entity.Validate();
+            
             _dbContext.Set<T>().Add(entity);
             _dbContext.SaveChanges();
         }
@@ -48,6 +51,12 @@ namespace Core.DAO
         public IList<T> GetAll()
         {
             return _dbContext.Set<T>().ToList();
+        }
+
+        /// <inheritdoc />
+        public T GetById(int id)
+        {
+            return _dbContext.Set<T>().Find(id);
         }
     }
 }

@@ -26,5 +26,12 @@ namespace Core.DAO
         /// </summary>
         /// <returns>the List of T</returns>
         IList<T> GetAll();
+
+        /// <summary>
+        /// Obtiene una entidad por su identificador
+        /// </summary>
+        /// <param name="id">identificador de la entidad</param>
+        /// <returns></returns>
+        T GetById(int id);
     }
 }
