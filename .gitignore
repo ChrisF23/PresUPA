@@ -391,6 +391,10 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
+
+# Base de datos SQLite
+*.db
+
 ### Windows template
 # Windows thumbnail cache files
 Thumbs.db
