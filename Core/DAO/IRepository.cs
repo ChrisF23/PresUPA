@@ -18,8 +18,14 @@ namespace Core.DAO
         /// <summary>
         /// Guarda una entidad en el repositorio.
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="entity">Entidad a agregar</param>
         void Add(T entity);
+
+        /// <summary>
+        /// Remueve una entidad del repositorio.
+        /// </summary>
+        /// <param name="entity">Entidad a eliminar</param>
+        void Remove(T entity);
 
         /// <summary>
         /// Obtiene todas las entidades en el sistema.

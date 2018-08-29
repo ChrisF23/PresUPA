@@ -46,6 +46,20 @@ namespace TestCore.DAO
                 Persona persona = repo.GetByRut("1-1");
                 Assert.Null(persona);
             }
+            
+            // Eliminacion
+            {
+                Persona persona = repo.GetById(1);
+                Assert.NotNull(persona);
+                
+                repo.Remove(persona);                
+            }
+            
+            // Busqueda no exitosa
+            {
+                Persona persona = repo.GetById(1);
+                Assert.Null(persona);
+            }
         
         }
 

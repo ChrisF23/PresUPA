@@ -48,6 +48,13 @@ namespace Core.DAO
         }
 
         /// <inheritdoc />
+        public void Remove(T entity)
+        {
+            _dbContext.Set<T>().Remove(entity);
+            _dbContext.SaveChanges();
+        }
+        
+        /// <inheritdoc />
         public IList<T> GetAll()
         {
             return _dbContext.Set<T>().ToList();
