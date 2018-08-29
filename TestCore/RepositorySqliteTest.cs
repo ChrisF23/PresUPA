@@ -28,7 +28,7 @@ namespace Core.UniTest.DAO
             SqliteDbContext sqliteDbContext = new SqliteDbContext(options);
             
             // Repositorio de prueba
-            IRepository<Entidad> repository = new RepositorySqlite<Entidad>(sqliteDbContext);
+            IRepository<Entidad> repository = new RepositorySqliteRaw<Entidad>(sqliteDbContext);
             
             // Inicializacion del repositorio
             repository.Initialize();

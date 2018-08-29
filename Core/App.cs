@@ -30,7 +30,7 @@ namespace Core
             SqliteDbContext sqliteDbContext = new SqliteDbContext(options);
             
             // Repositorio de personas
-            IRepository<Persona> personas = new RepositorySqlite<Persona>(sqliteDbContext);
+            IRepository<Persona> personas = new RepositorySqliteRaw<Persona>(sqliteDbContext);
             
             // Sistema, realiza la inicializacion de la base de datos
             return new Sistema(personas);

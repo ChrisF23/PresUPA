@@ -11,10 +11,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Core.DAO
 {
     /// <summary>
-    /// Implementacion del IRepository generico.
+    /// Implementacion del IRepository generico basado en SQLite RAW.
     /// </summary>
     /// <typeparam name="T">Clase que implementa IModel</typeparam>
-    public class RepositorySqlite<T> : IRepository<T> where T : IModel
+    public class RepositorySqliteRaw<T> : IRepository<T> where T : IModel
     {
         /// <summary>
         /// Referencia a la base de datos.
@@ -29,7 +29,7 @@ namespace Core.DAO
         /// <summary>
         /// Construccion del repositorio conectado a la base de datos.
         /// </summary>
-        public RepositorySqlite(SqliteDbContext sqliteDbContext)
+        public RepositorySqliteRaw(SqliteDbContext sqliteDbContext)
         {
             _sqliteDbContext = sqliteDbContext ?? throw new ArgumentException("Se requiere el contexto Sqlite");
         }
