@@ -21,7 +21,7 @@ namespace Core.DAO
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Registro de las entidades a utilizar.
-            modelBuilder.Entity<Persona>().ToTable("Persona");
+            modelBuilder.Entity<Persona>();
         }
     }
 }
