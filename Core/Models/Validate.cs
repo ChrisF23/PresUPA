@@ -36,7 +36,7 @@ namespace Core.Models
                     throw new ModelException("Rut no valido: " + rut);
                 }
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 throw new ModelException("Rut no valido: " + rut);
             }
