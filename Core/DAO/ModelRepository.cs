@@ -43,8 +43,9 @@ namespace Core.DAO
         {
             // Validacion de la entidad antes de ingresar a la bd
             entity.Validate();
-            
-            _dbContext.Set<T>().Add(entity);
+
+            // Si ya tengo id, solo es necesario actualizar.
+            _dbContext.Entry(entity).State = entity.Id == 0 ?EntityState.Added : EntityState.Modified;            
             _dbContext.SaveChanges();
         }
 
