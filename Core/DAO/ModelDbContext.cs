@@ -22,6 +22,7 @@ namespace Core.DAO
         {
             // Registro de las entidades a utilizar.
             modelBuilder.Entity<Persona>();
+            modelBuilder.Entity<Usuario>();
         }
     }
 }

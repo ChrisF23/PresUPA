@@ -32,9 +32,7 @@ namespace Core.Models
         /// </summary>
         public string Email { get; set; }
 
-        /// <summary>
-        /// Validacion de los atributos de la clase.
-        /// </summary>
+        /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
         {
             if (String.IsNullOrEmpty(Rut))
