@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Specialized;
 
 namespace Core.Models
 {
@@ -27,7 +26,7 @@ namespace Core.Models
         /// Apellido materno.,
         /// </summary>
         public string Materno { get; set; }
-        
+
         /// <summary>
         /// Correo Electronico de la persona
         /// </summary>
@@ -42,6 +41,9 @@ namespace Core.Models
             {
                 throw new ModelException("Rut no puede ser null");
             }
+
+            // Validacion del RUT
+            Models.Validate.ValidarRut(Rut);
 
             if (String.IsNullOrEmpty(Nombre))
             {
