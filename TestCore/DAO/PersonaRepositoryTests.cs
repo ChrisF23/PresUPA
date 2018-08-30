@@ -1,18 +1,37 @@
+using System;
 using System.Collections.Generic;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TestCore.DAO
 {
     /// <summary>
     /// Testing del repositorio de personas
     /// </summary>
-    public sealed class TestPersonaRepository
+    public sealed class PersonaRepositoryTests
     {
+        /// <summary>
+        /// Logger de la clase
+        /// </summary>
+        private readonly ITestOutputHelper _output;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="output"></param>
+        public PersonaRepositoryTests(ITestOutputHelper output)
+        {
+            _output = output ?? throw new ArgumentNullException("Se requiere la consola");
+        }
+
+        /// <summary>
+        /// Test de insercion y busqueda en el repositorio.
+        /// </summary>
         [Fact]
-        public void PersonaSavingTest()
+        public void InsercionBusquedaPersonaTest()
         {
             // Contexto
             DbContext dbContext = BuildTestModelContext();
@@ -24,7 +43,7 @@ namespace TestCore.DAO
             {
                 Persona persona = new Persona()
                 {
-                    Rut = "13014491-8",
+                    Rut = "130144918",
                     Nombre = "Diego",
                     Paterno = "Urrutia",
                     Materno = "Astorga",
@@ -38,13 +57,19 @@ namespace TestCore.DAO
             
             // Busqueda (exitosa)
             {
-                Persona persona = repo.GetByRut("13014491-8");
+                Persona persona = repo.GetByRut("130144918");
                 Assert.NotNull(persona);
             }
             
             // Busqueda (no exitosa)
             {
-                Persona persona = repo.GetByRut("1-1");
+                Persona persona = repo.GetByRut("132204810");
+                Assert.Null(persona);
+            }
+            
+            // Busqueda (no exitosa)
+            {
+                Persona persona = repo.GetByRut(null);
                 Assert.Null(persona);
             }
             

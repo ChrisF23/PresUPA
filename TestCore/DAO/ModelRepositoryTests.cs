@@ -12,9 +12,8 @@ namespace TestCore.DAO
     /// <summary>
     /// Test del repositorio EF
     /// </summary>
-    public class TestModelRepository
+    public class ModelRepositoryTests
     {
-
         /// <summary>
         /// Logger de la clase
         /// </summary>
@@ -24,16 +23,16 @@ namespace TestCore.DAO
         /// Constructor
         /// </summary>
         /// <param name="output"></param>
-        public TestModelRepository(ITestOutputHelper output)
+        public ModelRepositoryTests(ITestOutputHelper output)
         {
-            _output = output ?? throw new ArgumentException("Se requiere la consola");
+            _output = output ?? throw new ArgumentNullException("Se requiere la consola");
         }
 
         /// <summary>
         /// Prueba de la clase completa.
         /// </summary>
         [Fact]
-        public void MainTest()
+        public void InsercionBusquedaEntidadTest()
         {
             _output.WriteLine("Starting test ..");
             
