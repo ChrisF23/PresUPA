@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,6 +65,12 @@ namespace Core.DAO
         public T GetById(int id)
         {
             return _dbContext.Set<T>().Find(id);
+        }
+
+        /// <inheritdoc />
+        public IList<T> GetAll(Expression<Func<T, bool>> expression)
+        {
+            return _dbContext.Set<T>().Where(expression).ToList();
         }
     }
 }

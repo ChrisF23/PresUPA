@@ -4,7 +4,6 @@ using Core;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -93,6 +92,13 @@ namespace TestCore.DAO
             {
                 Entidad entidad = repo.GetById(-1);
                 Assert.Null(entidad);
+            }
+            
+            // GetAll with expression
+            {
+                IList<Entidad> entidades = repo.GetAll(e => e.Cortito == 12);
+                
+                Assert.Equal(1, entidades.Count);
             }
             
             _output.WriteLine("Test ended!");

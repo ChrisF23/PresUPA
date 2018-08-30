@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Core.Models;
 
 namespace Core.DAO
@@ -39,5 +41,12 @@ namespace Core.DAO
         /// <param name="id">identificador de la entidad</param>
         /// <returns></returns>
         T GetById(int id);
+
+        /// <summary>
+        /// Funcion de busqueda mediante LINQ
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        IList<T> GetAll(Expression<Func<T, bool>> expression);
     }
 }

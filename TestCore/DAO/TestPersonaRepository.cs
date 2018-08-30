@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +47,24 @@ namespace TestCore.DAO
                 Assert.Null(persona);
             }
             
+            // Todos
+            {
+                IList<Persona> personas = repo.GetAll();
+                Assert.NotEmpty(personas);
+            }
+            
+            // Busqueda por nombre
+            {
+                IList<Persona> personas = repo.GetAll(p => p.Nombre.Equals("Diego"));
+                Assert.NotEmpty(personas);
+            }
+
+            // Busqueda por nombre
+            {
+                IList<Persona> personas = repo.GetAll(p => p.Nombre.Equals("Francisco"));
+                Assert.Empty(personas);
+            }
+            
             // Eliminacion
             {
                 Persona persona = repo.GetById(1);
@@ -60,6 +78,7 @@ namespace TestCore.DAO
                 Persona persona = repo.GetById(1);
                 Assert.Null(persona);
             }
+            
         
         }
 
