@@ -7,7 +7,7 @@ namespace TestCore.Models
     /// <summary>
     /// Testing de la clase Persona.
     /// </summary>
-    public class PersonaTest
+    public class PersonaTests
     {
         /// <summary>
         /// Test del constructor
