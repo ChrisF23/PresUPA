@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Specialized;
+
 namespace Core.Models
 {
     /// <summary>
@@ -21,28 +24,38 @@ namespace Core.Models
         public string Paterno { get; set; }
 
         /// <summary>
-        /// Apellido materno.
+        /// Apellido materno.,
         /// </summary>
         public string Materno { get; set; }
+        
+        /// <summary>
+        /// Correo Electronico de la persona
+        /// </summary>
+        public string Email { get; set; }
 
         /// <summary>
         /// Validacion de los atributos de la clase.
         /// </summary>
         public override void Validate()
         {
-            if (Rut == null)
+            if (String.IsNullOrEmpty(Rut))
             {
                 throw new ModelException("Rut no puede ser null");
             }
 
-            if (Nombre == null || Nombre.Length < 2)
+            if (String.IsNullOrEmpty(Nombre))
             {
                 throw new ModelException("Nombre no puede ser null o de tamanio inferior a 2");
             }
 
-            if (Paterno == null || Paterno.Length < 2)
+            if (String.IsNullOrEmpty(Paterno))
             {
                 throw new ModelException("Apellido Paterno no puede ser null o tamanio inferior a 2");
+            }
+
+            if (String.IsNullOrEmpty(Email))
+            {
+                throw new ModelException("Email no puede ser null o vacio.");
             }
         }
     }

@@ -27,7 +27,8 @@ namespace TestCore.DAO
                     Rut = "13014491-8",
                     Nombre = "Diego",
                     Paterno = "Urrutia",
-                    Materno = "Astorga"
+                    Materno = "Astorga",
+                    Email = "durrutia@ucn.cl"
                 };
                 
                 // Insert into the backend
@@ -53,16 +54,21 @@ namespace TestCore.DAO
                 Assert.NotEmpty(personas);
             }
             
-            // Busqueda por nombre
+            // Busqueda por nombre (exito)
             {
                 IList<Persona> personas = repo.GetAll(p => p.Nombre.Equals("Diego"));
                 Assert.NotEmpty(personas);
             }
 
-            // Busqueda por nombre
+            // Busqueda por nombre (no exito)
             {
                 IList<Persona> personas = repo.GetAll(p => p.Nombre.Equals("Francisco"));
                 Assert.Empty(personas);
+            }
+            
+            // Busqudeda por email
+            {
+                Assert.NotEmpty(repo.GetAll(p => p.Email.Equals("durrutia@ucn.cl")));
             }
             
             // Eliminacion
