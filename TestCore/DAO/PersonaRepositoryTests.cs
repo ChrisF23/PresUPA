@@ -91,9 +91,15 @@ namespace TestCore.DAO
                 Assert.Empty(personas);
             }
             
-            // Busqudeda por email
+            // Busqueda por email
             {
                 Assert.NotEmpty(repo.GetAll(p => p.Email.Equals("durrutia@ucn.cl")));
+            }
+            
+            // Busqueda por rut y email
+            {
+                Assert.NotNull(repo.GetByRutOrEmail("130144918"));   
+                Assert.NotNull(repo.GetByRutOrEmail("durrutia@ucn.cl"));   
             }
             
             // Eliminacion

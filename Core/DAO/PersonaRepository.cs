@@ -21,5 +21,11 @@ namespace Core.DAO
         {
             return _dbContext.Set<Persona>().FirstOrDefault(p => p.Rut.Equals(rut));
         }
+
+        /// <inheritdoc cref="IPersonaRepository.GetByRutOrEmail"/>
+        public Persona GetByRutOrEmail(string rutEmail)
+        {
+            return _dbContext.Set<Persona>().FirstOrDefault(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail));
+        }
     }
 }

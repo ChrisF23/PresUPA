@@ -9,11 +9,17 @@ namespace Core.DAO
     {
 
         /// <summary>
-        /// Busca a una persona por su RUT
+        /// Busca a una persona por su RUT.
         /// </summary>
         /// <param name="rut">RUT</param>
         /// <returns>The Personas</returns>
         Persona GetByRut(string rut);
 
+        /// <summary>
+        /// Obtiene una persona por su RUT o Correo electronico.
+        /// </summary>
+        /// <param name="rutEmail"></param>
+        /// <returns></returns>
+        Persona GetByRutOrEmail(string rutEmail);
     }
 }
