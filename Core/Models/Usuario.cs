@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
@@ -22,6 +23,15 @@ namespace Core.Models
         /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
         {
+            if (Persona == null)
+            {
+                throw new ModelException("Se requiere la Persona");
+            }
+
+            if (String.IsNullOrEmpty(Password))
+            {
+                throw new ModelException("Se requiere el Password");
+            }
         }
     }
 }
