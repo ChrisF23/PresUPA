@@ -18,7 +18,8 @@ namespace Core
         public static Sistema BuildSistema()
         {
             DbContextOptions<ModelDbContext> options = new DbContextOptionsBuilder<ModelDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                // .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Memory
+                .UseSqlite(@"Data Source=database.db") // SQLite
                 .EnableSensitiveDataLogging()
                 .Options;
             
