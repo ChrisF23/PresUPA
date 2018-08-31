@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Core.Models
 {
     /// <summary>
@@ -8,13 +10,15 @@ namespace Core.Models
         /// <summary>
         /// Persona que representa a este usuario
         /// </summary>
+        [Required]
         public Persona Persona { get; set; }
-        
+
         /// <summary>
         /// Contrasenia de acceso de la Persona
         /// </summary>
+        [Required]
         public string Password { get; set; }
-        
+
         /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
         {

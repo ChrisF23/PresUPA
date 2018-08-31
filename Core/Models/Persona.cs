@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
 {
@@ -10,16 +11,19 @@ namespace Core.Models
         /// <summary>
         /// Identificador unico.
         /// </summary>
+        [Required]
         public string Rut { get; set; }
 
         /// <summary>
         /// Primer y segundo (optativo) nombre de la persona.
         /// </summary>
+        [Required]
         public string Nombre { get; set; }
 
         /// <summary>
         /// Apellido paterno.
         /// </summary>
+        [Required]
         public string Paterno { get; set; }
 
         /// <summary>
@@ -30,6 +34,8 @@ namespace Core.Models
         /// <summary>
         /// Correo Electronico de la persona
         /// </summary>
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         /// <inheritdoc cref="BaseEntity.Validate"/>
