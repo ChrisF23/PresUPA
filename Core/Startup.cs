@@ -18,14 +18,14 @@ namespace Core
         public static Sistema BuildSistema()
         {
             DbContextOptions<ModelDbContext> options = new DbContextOptionsBuilder<ModelDbContext>()
-                // .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Memory
-                .UseSqlite(@"Data Source=database.db") // SQLite
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Memory
+                // .UseSqlite(@"Data Source=database.db") // SQLite
                 .EnableSensitiveDataLogging()
                 .Options;
             
             DbContext dbContext = new ModelDbContext(options);
             
-            IPersonaRepository personas = new PersonaRepository(dbContext);
+            IRepository<Persona> personas = new ModelRepository<Persona>(dbContext);
             IRepository<Usuario> usuarios = new ModelRepository<Usuario>(dbContext);
             
             return new Sistema(personas, usuarios);

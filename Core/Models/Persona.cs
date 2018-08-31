@@ -51,17 +51,17 @@ namespace Core.Models
 
             if (String.IsNullOrEmpty(Nombre))
             {
-                throw new ModelException("Nombre no puede ser null o de tamanio inferior a 2");
+                throw new ModelException("Nombre no puede ser null o vacio");
             }
 
             if (String.IsNullOrEmpty(Paterno))
             {
-                throw new ModelException("Apellido Paterno no puede ser null o tamanio inferior a 2");
+                throw new ModelException("Apellido Paterno no puede ser null o vacio");
             }
 
             if (String.IsNullOrEmpty(Email))
             {
-                throw new ModelException("Email no puede ser null o vacio.");
+                throw new ModelException("Email no puede ser null o vacio");
             }
         }
     }

@@ -30,13 +30,18 @@ namespace TestCore.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Test principal de la clase.
         /// </summary>
         [Fact]
-        public void LoginTest()
+        public void AllMethodsTest()
         {
             _output.WriteLine("Starting Sistema test ...");
             ISistema sistema = Startup.BuildSistema();
+            
+            // Insert null
+            {
+                Assert.Throws<ModelException>(() => sistema.Save(null));
+            }
             
             // Insert persona
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ namespace TestCore.DAO
             DbContext dbContext = BuildTestModelContext();
 
             // Repositorio de personas
-            PersonaRepository repo = new PersonaRepository(dbContext);
+            IRepository<Persona> repo = new ModelRepository<Persona>(dbContext);
 
             // Creacion
             {
@@ -57,19 +58,19 @@ namespace TestCore.DAO
             
             // Busqueda (exitosa)
             {
-                Persona persona = repo.GetByRut("130144918");
+                Persona persona = repo.GetAll(p => p.Rut.Equals("130144918")).FirstOrDefault();
                 Assert.NotNull(persona);
             }
             
             // Busqueda (no exitosa)
             {
-                Persona persona = repo.GetByRut("132204810");
+                Persona persona = repo.GetAll(p => p.Rut.Equals("132204810")).FirstOrDefault();
                 Assert.Null(persona);
             }
             
             // Busqueda (no exitosa)
             {
-                Persona persona = repo.GetByRut(null);
+                Persona persona = repo.GetAll(null).FirstOrDefault();
                 Assert.Null(persona);
             }
             
@@ -98,8 +99,8 @@ namespace TestCore.DAO
             
             // Busqueda por rut y email
             {
-                Assert.NotNull(repo.GetByRutOrEmail("130144918"));   
-                Assert.NotNull(repo.GetByRutOrEmail("durrutia@ucn.cl"));   
+                Assert.NotNull(repo.GetAll(p => p.Rut.Equals("130144918")).FirstOrDefault());   
+                Assert.NotNull(repo.GetAll(p => p.Email.Equals("durrutia@ucn.cl")).FirstOrDefault());   
             }
             
             // Eliminacion

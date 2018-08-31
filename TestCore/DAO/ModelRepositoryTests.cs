@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Core;
 using Core.DAO;
 using Core.Models;
@@ -79,12 +80,12 @@ namespace TestCore.DAO
                 {
                     Console.WriteLine(Utils.ToJson(e));
                 }
+                
             }
 
             // Get by id (found)
             {
-                Entidad entidad = repo.GetById(1);
-                Assert.NotNull(entidad);
+                Assert.NotNull(repo.GetById(1));
             }
             
             // Get by id (not found)
@@ -98,6 +99,13 @@ namespace TestCore.DAO
                 IList<Entidad> entidades = repo.GetAll(e => e.Cortito == 12);
                 
                 Assert.Equal(1, entidades.Count);
+            }
+            
+            // Remove
+            {
+                Entidad entidad = repo.GetById(1);
+                repo.Remove(entidad);
+                Assert.Null(repo.GetById(1));
             }
             
             _output.WriteLine("Test ended!");

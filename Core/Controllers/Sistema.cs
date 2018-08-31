@@ -13,14 +13,14 @@ namespace Core.Controllers
     {
         // Patron Repositorio, generalizado via Generics
         // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/
-        private readonly IPersonaRepository _repositoryPersona;
+        private readonly IRepository<Persona> _repositoryPersona;
 
         private readonly IRepository<Usuario> _repositoryUsuario;
 
         /// <summary>
         /// Inicializa los repositorios internos de la clase.
         /// </summary>
-        public Sistema(IPersonaRepository repositoryPersona, IRepository<Usuario> repositoryUsuario)
+        public Sistema(IRepository<Persona> repositoryPersona, IRepository<Usuario> repositoryUsuario)
         {
             // Setter!
             _repositoryPersona = repositoryPersona ??
@@ -82,7 +82,7 @@ namespace Core.Controllers
         /// <inheritdoc />
         public Usuario Login(string rutEmail, string password)
         {
-            Persona persona = _repositoryPersona.GetByRutOrEmail(rutEmail);
+            Persona persona = Find(rutEmail);
             if (persona == null)
             {
                 throw new ModelException("Usuario no encontrado");
@@ -112,7 +112,7 @@ namespace Core.Controllers
         /// <inheritdoc />
         public Persona Find(string rutEmail)
         {
-            return _repositoryPersona.GetByRutOrEmail(rutEmail);
+            return _repositoryPersona.GetAll(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail)).FirstOrDefault();
         }
     }
 }

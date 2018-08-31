@@ -16,7 +16,7 @@ namespace Core.Models
         {
             if (String.IsNullOrEmpty(rut))
             {
-                throw new ModelException("Rut no valido: " + rut);
+                throw new ModelException("Rut no valido");
             }
 
             try
@@ -33,12 +33,12 @@ namespace Core.Models
 
                 if (dv != Convert.ToChar(s != 0 ? s + 47 : 75))
                 {
-                    throw new ModelException("Rut no valido: " + rut);
+                    throw new ModelException("Rut no valido");
                 }
             }
             catch (FormatException)
             {
-                throw new ModelException("Rut no valido: " + rut);
+                throw new ModelException("Rut no valido");
             }
 
         }
