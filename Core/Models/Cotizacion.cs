@@ -43,9 +43,9 @@ namespace Core.Models
         /// <summary>
         /// Rut del cliente al cual le es asignada esta cotizacion.
         /// </summary>
-        public string FKRutCliente { get; set; }
+        public Cliente Cliente { get; set; }
 
-        //public IList<Servicio> Servicios {get; set;}
+        public IList<Servicio> Servicios {get; set;}
         
         /// <summary>
         /// Costo total del la cotizacion.
@@ -61,15 +61,31 @@ namespace Core.Models
         /// <summary>
         /// Calcula y asigna el costo total de esta cotizacion.
         /// </summary>
-        public void AsignarServicios(IList<Servicio> servicios)
+        public void CalcularCostoTotal()
         {
-            this.CostoTotal = 0;
+            
+            CostoTotal = 0;
 
-            foreach (Servicio servicio in servicios)
+            if (Servicios != null)
             {
-                servicio.FKIdentificadorCotizacion = this.Identificador;
-                this.CostoTotal += (servicio.CostoUnidad*servicio.Cantidad);
+                foreach (Servicio servicio in Servicios)
+                    CostoTotal += servicio.CostoUnidad * servicio.Cantidad;
             }
+        }
+
+        public void AsignarServicios()
+        {
+            if (Servicios != null && !string.IsNullOrEmpty(Identificador))
+            {
+                foreach (Servicio servicio in Servicios)
+                    servicio.IdentificadorCotizacion = Identificador;
+            }
+        }
+
+        private void ValidarServicios()
+        {
+            foreach (Servicio servicio in Servicios)
+                servicio.Validate();
         }
 
 
@@ -101,9 +117,14 @@ namespace Core.Models
                 throw new ModelException("La descripcion no puede estar vacia.");
             }
             
-            if (String.IsNullOrEmpty(FKRutCliente))
+            if (Cliente == null)
             {
                 throw new ModelException("La cotizacion no tiene un cliente asignado.");
+            }
+
+            if (Servicios == null)
+            {
+                throw new ModelException("La cotizacion no tiene servicios asignados.");
             }
 
             if (CostoTotal == 0)
@@ -111,8 +132,7 @@ namespace Core.Models
                 throw new ModelException("La cotizacion no puede tener un costo total de $0.");
             }
 
-            
-
+            ValidarServicios();
         }
     }
    

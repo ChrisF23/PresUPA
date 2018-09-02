@@ -4,7 +4,7 @@ namespace Core.Models
 {
     public class Servicio : BaseEntity
     {
-        public string FKIdentificadorCotizacion { get; set; }
+        public string IdentificadorCotizacion { get; set; }
 
         public string Descripcion { get; set; }
 
@@ -16,16 +16,15 @@ namespace Core.Models
         public override void Validate()
         {
             
-            if (String.IsNullOrEmpty(FKIdentificadorCotizacion))
+            if (String.IsNullOrEmpty(IdentificadorCotizacion))
             {
-                throw new ModelException("ID de cotizacion no asignada al servicio.");
+                throw new ModelException("Este servicio no tiene asignado un identificador de cotizacion.");
             }
             
             if (String.IsNullOrEmpty(Descripcion))
             {
                 throw new ModelException("La descripcion no puede estar vacia.");
             }
-
             
             if (CostoUnidad <= 0)
             {

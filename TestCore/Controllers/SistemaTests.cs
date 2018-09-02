@@ -36,7 +36,7 @@ namespace TestCore.Controllers
         public void AllMethodsTest()
         {
             _output.WriteLine("Starting Sistema test ...");
-            ISistema sistema = Startup.BuildSistema();
+            Sistema sistema = Startup.BuildSistema();
             
             // Insert null
             {

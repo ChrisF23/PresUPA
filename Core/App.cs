@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Core.Controllers;
 using Core.Models;
 
-//TODO: Crear la clase Cliente y asignarla como atributo a Cotizacion.
+//TODO: Los servicios requieren un repositorio? Vea a la linea 58 de esta clase.
 
 namespace Core
 {
@@ -55,22 +55,35 @@ namespace Core
             */
 
             {
+                //Crear persona:
+                Persona persona = new Persona()
+                {
+                    Nombre = "Angel",
+                    Paterno = "Farias",
+                    Materno = "Aguila",
+                    Rut = "142339882",
+                    Email = "Angel.Farias@gmail.com"
+                };
                
+                //Crear cliente.
+                
+                Cliente cliente = new Cliente()
+                {
+                    Persona = persona,
+                    Tipo = TipoCliente.UnidadInterna
+                };
+                
                 //Crear cotizacion.
                 
                 Cotizacion cotizacion = new Cotizacion()
                 {
-                    //TODO: Luego de crear la clase cliente, cambiar la siguiente linea por: Cliente = cliente;
-                    FKRutCliente = "1234567890",
+                    Cliente = cliente,
                     Titulo = "Video resumen 10 años Cemp UCN",
                     Descripcion = "Grabación, edición y postproducción de video de 3 a 4 minutos " +
                                   "sobre actividad de los 10 años del Cemp UCN. El valor incluye 2 revisiones previa entrega, postproducción " +
                                   "de imagen y audio, gráficas de presentación inicio y cierre. Los valores por este trabajo " +
                                   "son de acuerdo a tarifa especial para unidades pertenecientes a la UCN",
                     //fechaCreacion = DateTime.Now,
-                    //Estado = EstadoCotizacion.Borrador,
-                    
-                       
                 };
                 
                 //Crear los servicios.
@@ -95,16 +108,50 @@ namespace Core
                 servicios.Add(servicio2);
 
                 //Asignar los servicios a la cotizacion.
+                cotizacion.Servicios = servicios;
                 
-                cotizacion.AsignarServicios(servicios);
-                
-                //sistema.Save();
+                //Guardar la cotizacion en la base de datos.
                 sistema.GuardarCotizacion(cotizacion);
                 
-                Console.WriteLine(Utils.ToJson(cotizacion));
+                
+                //Guardar los servicios en la base de datos.
+                //(Ya que dependen de la cotizacion, solo se pueden guardar despues de haber guardado la cotizacion.)
+                foreach (Servicio s in servicios)
+                {
+                    sistema.GuardarServicio(s);
+                }
+                
+                //-------------------------------
+                //Despliegue:
+                //-------------------------------
+                
+                //Forma 1:
+                {
+                    Console.WriteLine(
+                        "Mostrar los servicios de la cotizacion anterior, accediendo directamente a su atributo Servicios");
+                    
+                    IList<Servicio> serviciosCotizacionAnterior = cotizacion.Servicios;
+                    foreach (Servicio s in serviciosCotizacionAnterior)
+                    {
+                        Console.WriteLine(Utils.ToJson(s));
+                    }
+                }
+                
+                //Forma 2:
+                {
+                    Console.WriteLine(
+                        "Mostrar los servicios de la cotizacion anterior, mediante el repositorio de servicios.");
 
+                    IList<Servicio> serviciosCotizacionAnterior =
+                        sistema.ObtenerServiciosPorIDCotizacion(cotizacion.Identificador);
+
+                    foreach (Servicio s in serviciosCotizacionAnterior)
+                    {
+                        Console.WriteLine(Utils.ToJson(s));
+                    }
+                }
             }
-
+            
             Console.WriteLine("Fin de la aplicacion.");
         }
     }

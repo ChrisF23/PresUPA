@@ -18,7 +18,8 @@ namespace Core.Controllers
         IList<Cotizacion> BuscarCotizacion(string busqueda);
         void EnviarCotizacion(Cotizacion cotizacion);
         void EnviarCotizacion(Cotizacion cotizacion, string emailDestino);
+         */
         IList<Cotizacion> ObtenerCotizaciones();
-        */
+       
     }
 }
