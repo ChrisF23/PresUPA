@@ -15,7 +15,10 @@ namespace Core.DAO
             // Asegurar que se elimino y creo la base de datos
             Database.EnsureDeleted();
             Database.EnsureCreated();
+            
         }
+        
+        //TODO: Aqui se deben registrar las entidades restantes del modelo!!!
         
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,6 +26,7 @@ namespace Core.DAO
             // Registro de las entidades a utilizar.
             modelBuilder.Entity<Persona>();
             modelBuilder.Entity<Usuario>();
+            modelBuilder.Entity<Cotizacion>();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Core.Models
         {
             if (String.IsNullOrEmpty(Rut))
             {
-                throw new ModelException("Rut no puede ser null");
+                throw new ModelException("Rut no puede ser null.");
             }
 
             // Validacion del RUT
@@ -51,17 +51,17 @@ namespace Core.Models
 
             if (String.IsNullOrEmpty(Nombre))
             {
-                throw new ModelException("Nombre no puede ser null o vacio");
+                throw new ModelException("Nombre no puede ser null o vacio.");
             }
 
             if (String.IsNullOrEmpty(Paterno))
             {
-                throw new ModelException("Apellido Paterno no puede ser null o vacio");
+                throw new ModelException("Apellido Paterno no puede ser null o vacio.");
             }
 
             if (String.IsNullOrEmpty(Email))
             {
-                throw new ModelException("Email no puede ser null o vacio");
+                throw new ModelException("Email no puede ser null o vacio.");
             }
         }
     }
