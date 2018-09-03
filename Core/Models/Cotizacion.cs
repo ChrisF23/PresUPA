@@ -4,6 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
 {
+    /// <summary>
+    /// Clase que representa una cotizacion
+    /// </summary>
+    /// <remarks>
+    /// Contiene informacion sobre una cotizacion de acuerdo al dominio
+    /// </remarks>
     public class Cotizacion : BaseEntity
     {
         /// <summary>
@@ -38,13 +44,16 @@ namespace Core.Models
         /// <summary>
         /// Fecha de creacion de esta cotizacion.
         /// </summary>
-        //public DateTime fechaCreacion { get; set; }
+        public DateTime FechaCreacion { get; set; }
 
         /// <summary>
-        /// Rut del cliente al cual le es asignada esta cotizacion.
+        /// Cliente al cual le es asignada esta cotizacion.
         /// </summary>
         public Cliente Cliente { get; set; }
-
+        
+        /// <summary>
+        /// Lista de los servicios que conforman la cotizacion
+        /// </summary>
         public IList<Servicio> Servicios {get; set;}
         
         /// <summary>
@@ -75,11 +84,7 @@ namespace Core.Models
 
         public void AsignarServicios()
         {
-            if (Servicios != null && !string.IsNullOrEmpty(Identificador))
-            {
-                foreach (Servicio servicio in Servicios)
-                    servicio.IdentificadorCotizacion = Identificador;
-            }
+           
         }
 
         private void ValidarServicios()
@@ -135,7 +140,9 @@ namespace Core.Models
             ValidarServicios();
         }
     }
-   
+    /// <summary>
+    /// Enumeracion con los distintos estados de la cotizacion
+    /// </summary>
     public enum EstadoCotizacion
     {
         Borrador,

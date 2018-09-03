@@ -24,7 +24,6 @@ namespace Core.Controllers
 
         private readonly IRepository<Cliente> _repositoryCliente;
         
-        private readonly IRepository<Servicio> _repositoryServicio;
         
         
         private int LastCotizacionNumber;
@@ -36,8 +35,7 @@ namespace Core.Controllers
             IRepository<Persona> repositoryPersona, 
             IRepository<Usuario> repositoryUsuario, 
             IRepository<Cotizacion> repositoryCotizacion,
-            IRepository<Cliente> repositoryCliente,
-            IRepository<Servicio> repositoryServicio)
+            IRepository<Cliente> repositoryCliente)
         {
             // Setter!
             _repositoryPersona = repositoryPersona ??
@@ -48,15 +46,14 @@ namespace Core.Controllers
                                  throw new ArgumentNullException("Se requiere repositorio de cotizaciones");
             _repositoryCliente = repositoryCliente ??
                                     throw new ArgumentNullException("Se requiere repositorio de clientes");
-            _repositoryServicio = repositoryServicio ??
-                                 throw new ArgumentNullException("Se requiere repositorio de servicios");
+           
             
             // Inicializacion del repositorio.
             _repositoryPersona.Initialize();
             _repositoryUsuario.Initialize();
             _repositoryCotizacion.Initialize();
             _repositoryCliente.Initialize();
-            _repositoryServicio.Initialize();
+            
             
             //Determinar el numero de la ultima cotizacion guardada.
 
@@ -228,25 +225,24 @@ namespace Core.Controllers
 
         public IList<Cotizacion> ObtenerCotizaciones()
         {
-            return _repositoryCotizacion.GetAll();
-        }
-
-        
-        /*
-         * Operaciones de Sistema - Servicio
-         */
-        
-        public IList<Servicio> ObtenerServiciosPorIDCotizacion(string identificadorCotizacion)
-        {
-            return _repositoryServicio.GetAll(s => s.IdentificadorCotizacion.Equals(identificadorCotizacion)).ToList();
+            if (_repositoryCotizacion.GetAll().Count == 0)
+            {
+                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
+            }
+            else
+            {
+                return _repositoryCotizacion.GetAll();
+            }
         }
 
         public void GuardarServicio(Servicio servicio)
         {
-            if (servicio == null)
-                throw new ModelException("El servicio es null");
-            
-            _repositoryServicio.Add(servicio);
+            throw new NotImplementedException();
+        }
+
+        public IList<Servicio> ObtenerServiciosPorIDCotizacion(string identificadorCotizacion)
+        {
+            throw new NotImplementedException();
         }
     }
 }

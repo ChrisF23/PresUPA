@@ -1,25 +1,38 @@
 ﻿using System;
 
 namespace Core.Models
-{
+{    
+    /// <summary>
+    /// Servicios de una cotizacion
+    /// no se almacena en un repositorio
+    /// pertenece en List como atributo de Cotizaciones
+    /// </summary>
     public class Servicio : BaseEntity
     {
-        public string IdentificadorCotizacion { get; set; }
-
+        /// <summary>
+        /// Descripcion del servicio 
+        /// </summary>
         public string Descripcion { get; set; }
-
+        
+        /// <summary>
+        /// Costo precio unitario del servicio
+        /// </summary>
         public int CostoUnidad { get; set; }
-
+        
+        
+        /// <summary>
+        /// Cantidad de veces que se presta el servicio
+        /// </summary>
         public int Cantidad { get; set; }
 
+        /// <summary>
+        /// Estado de progreso del servicio
+        /// </summary>
+        public EstadoServicio Estado { get; set; }
+        
 
         public override void Validate()
         {
-            
-            if (String.IsNullOrEmpty(IdentificadorCotizacion))
-            {
-                throw new ModelException("Este servicio no tiene asignado un identificador de cotizacion.");
-            }
             
             if (String.IsNullOrEmpty(Descripcion))
             {
@@ -35,6 +48,25 @@ namespace Core.Models
             {
                 throw new ModelException("La cantidad del servicio debe ser al menos 1.");
             }
+
+            if (Estado == null)
+            {
+                throw new ModelException("Debe existir un estado asignado al servicio");
+            }
         }
+    }
+    
+    /// <summary>
+    /// Enumeracion que contiene los estados de un servicio
+    /// </summary>
+    public enum EstadoServicio
+    {
+        Cancelado,
+        Entregado,
+        Revision,
+        PostProduccion,
+        Rodaje,
+        PreProduccion,
+        Pausa
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Core.Controllers;
 using Core.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 //TODO: Los servicios requieren un repositorio? Vea a la linea 58 de esta clase.
 
@@ -92,18 +93,22 @@ namespace Core
                 {
                     Descripcion = "Video de 3 a 4 Min",
                     Cantidad = 1,
-                    CostoUnidad = 100000
+                    CostoUnidad = 100000,
+                    Estado = EstadoServicio.Pausa
                 };
                 
                 Servicio servicio2 = new Servicio()
                 {
                     Descripcion = "Animacion 2D de 2 Min",
                     Cantidad = 1,
-                    CostoUnidad = 200000
+                    CostoUnidad = 200000,
+                    Estado = EstadoServicio.Pausa
                 };
 
                 IList<Servicio> servicios = new List<Servicio>();
                 
+                Console.WriteLine(servicio1.Estado);
+                Console.WriteLine(servicio1.Estado.ToString());
                 servicios.Add(servicio1);
                 servicios.Add(servicio2);
 
@@ -114,42 +119,26 @@ namespace Core
                 sistema.GuardarCotizacion(cotizacion);
                 
                 
-                //Guardar los servicios en la base de datos.
-                //(Ya que dependen de la cotizacion, solo se pueden guardar despues de haber guardado la cotizacion.)
-                foreach (Servicio s in servicios)
-                {
-                    sistema.GuardarServicio(s);
-                }
                 
                 //-------------------------------
                 //Despliegue:
                 //-------------------------------
-                
-                //Forma 1:
                 {
-                    Console.WriteLine(
-                        "Mostrar los servicios de la cotizacion anterior, accediendo directamente a su atributo Servicios");
-                    
-                    IList<Servicio> serviciosCotizacionAnterior = cotizacion.Servicios;
-                    foreach (Servicio s in serviciosCotizacionAnterior)
+
+                    IList<Cotizacion> listCotizaciones = sistema.ObtenerCotizaciones();
+                    foreach (Cotizacion c in listCotizaciones)
                     {
-                        Console.WriteLine(Utils.ToJson(s));
+                        Console.WriteLine(Utils.ToJson(c));
+                        IList<Servicio> serviciosCotizacionAnterior = cotizacion.Servicios;
+                        foreach (Servicio s in serviciosCotizacionAnterior)
+                        {
+                            Console.WriteLine(Utils.ToJson(s));
+                            Console.WriteLine(s.Estado);
+
+                        }
                     }
                 }
-                
-                //Forma 2:
-                {
-                    Console.WriteLine(
-                        "Mostrar los servicios de la cotizacion anterior, mediante el repositorio de servicios.");
 
-                    IList<Servicio> serviciosCotizacionAnterior =
-                        sistema.ObtenerServiciosPorIDCotizacion(cotizacion.Identificador);
-
-                    foreach (Servicio s in serviciosCotizacionAnterior)
-                    {
-                        Console.WriteLine(Utils.ToJson(s));
-                    }
-                }
             }
             
             Console.WriteLine("Fin de la aplicacion.");
