@@ -1,4 +1,6 @@
 using System;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace Core.Models
 {
@@ -42,5 +44,29 @@ namespace Core.Models
             }
 
         }
+
+        /// <summary>
+        /// Metodo que valida un email
+        /// </summary>
+        /// <param name="email"></param>
+        public static void ValidarEmail(string email)
+        {
+            try
+            {
+
+                MailAddress validate = new MailAddress(email);
+
+            }
+            catch (FormatException)
+            {
+                throw new ModelException("El email tiene un formato invalido");
+            }
+
+
+
+
+
+        }
+        
     }
 }

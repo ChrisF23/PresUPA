@@ -44,6 +44,8 @@ namespace TestCore.Models
                 _output.WriteLine("Persona es null --> Success");
             }
             cliente.Persona = new Persona();
+            
+            _output.WriteLine(Utils.ToJson(cliente));
 
         }
     }

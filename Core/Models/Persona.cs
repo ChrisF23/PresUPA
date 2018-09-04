@@ -47,6 +47,7 @@ namespace Core.Models
             }
 
             // Validacion del RUT
+            // Retorna una excepcion
             Models.Validate.ValidarRut(Rut);
 
             if (String.IsNullOrEmpty(Nombre))
@@ -63,6 +64,8 @@ namespace Core.Models
             {
                 throw new ModelException("Email no puede ser null o vacio.");
             }
+            
+            Models.Validate.ValidarEmail(Email);
         }
     }
 }

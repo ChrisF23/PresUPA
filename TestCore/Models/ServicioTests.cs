@@ -75,6 +75,8 @@ namespace TestCore.Models
                 Assert.Equal("La cantidad del servicio debe ser al menos 1",costoThrow.Message);
             }
             servicio.Cantidad= 100;
+            
+            _output.WriteLine(Utils.ToJson(servicio));
 
         }
     }
