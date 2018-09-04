@@ -39,20 +39,26 @@ namespace Core.Models
                 throw new ModelException("La descripcion no puede estar vacia.");
             }
             
-            if (CostoUnidad <= 0)
+            if (CostoUnidad < 0)
             {
-                throw new ModelException("El costo del servicio debe ser mayor a 0.");
+                throw new ModelException("El costo del servicio no puede ser un valor negativo.");
             }
 
-            if (Cantidad <= 0)
+            if (CostoUnidad == 0)
             {
-                throw new ModelException("La cantidad del servicio debe ser al menos 1.");
+                throw new ModelException("El costo del servicio no puede ser 0");
             }
 
-            if (Estado == null)
+            if (Cantidad < 0)
             {
-                throw new ModelException("Debe existir un estado asignado al servicio");
+                throw new ModelException("La cantidad del servicio no puede ser negativo.");
             }
+
+            if (Cantidad == 0)
+            {
+                throw new ModelException("La cantidad del servicio debe ser al menos 1");
+            }
+
         }
     }
     

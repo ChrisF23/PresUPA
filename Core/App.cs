@@ -124,7 +124,8 @@ namespace Core
 
             IList<Servicio> servicios = new List<Servicio>();
 
-            Console.WriteLine(servicio1.Estado);
+            Console.WriteLine(cotizacion.Estado);
+            
             Console.WriteLine(servicio1.Estado.ToString());
             servicios.Add(servicio1);
             servicios.Add(servicio2);

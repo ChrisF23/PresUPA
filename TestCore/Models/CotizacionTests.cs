@@ -30,6 +30,8 @@ namespace TestCore.Models
 
         /// <summary>
         /// Test del constructor
+        /// OJO: No se hace testing del estado, al ser un Enumm
+        /// automaticamente tomara el primer valor
         /// </summary>
         [Fact]
         public void TestConstructor()
