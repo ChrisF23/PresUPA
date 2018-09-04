@@ -2,7 +2,10 @@
 using Core.Models;
 
 namespace Core.Controllers
-{
+{    
+    /// <summary>
+    /// Operaciones del Sistema del model Persona
+    /// </summary>
     public interface IPersona
     {
         

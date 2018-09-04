@@ -5,7 +5,7 @@ using System.Text;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Internal;
-
+//TODO : Implementar las operaciones restantes y verificar la funcionalidad
 namespace Core.Controllers
 {
     
@@ -102,6 +102,11 @@ namespace Core.Controllers
             return _repositoryPersona.GetAll(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail)).FirstOrDefault();
         }
         
+        
+        
+        
+        
+        
         /*
          * Operaciones de Sistema - Usuario.
          */
@@ -162,6 +167,8 @@ namespace Core.Controllers
             return usuario;
         }
 
+        
+        
         /*
          * Operaciones de Sistema - Cliente.
          */
@@ -176,7 +183,23 @@ namespace Core.Controllers
             _repositoryCliente.Add(cliente);
             
         }
-        
+
+        public void BuscarCliente(string busqueda)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DesplegarCliente(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Cliente> ObtenerClientes()
+        {
+            throw new NotImplementedException();
+        }
+
+
         /*
          * Operaciones de Sistema - Cotizacion.
          */
@@ -223,6 +246,96 @@ namespace Core.Controllers
             _repositoryCotizacion.Add(cotizacion);
         }
 
+        /// <inheritdoc />
+        public void BorrarCotizacion(Cotizacion cotizacion)
+        {
+            if (cotizacion == null)
+            {
+                throw new ModelException("La cotizacion debe existir para ser eliminada");
+            }
+                _repositoryCotizacion.Remove(cotizacion);
+        }
+
+        /// <inheritdoc />
+        public void EditarCotizacion(Cotizacion cotizacion)
+        {
+            if (cotizacion == null)
+            {
+                throw new ModelException("La cotizacion no debe ser null");
+            }
+            
+            Cotizacion cotizacionEdit=
+            _repositoryCotizacion.GetById(cotizacion.Id);
+
+            if (cotizacionEdit == null)
+            {
+                throw new NullReferenceException("La Cotizacion a buscar no existe en el sistema");
+            }
+               
+            Console.WriteLine("Modificar Titulo de la Cotizacion");
+            cotizacionEdit.Titulo = Console.ReadLine();
+            
+            Console.WriteLine("Modificar Descripcion de la cotizacion");
+            cotizacionEdit.Descripcion = Console.ReadLine();
+        }
+
+        /// <inheritdoc />
+        public void CambiarEstadoCotizacion(Cotizacion cotizacion, EstadoCotizacion nuevoEstado)
+        {
+            if (cotizacion == null)
+            {
+                throw new ArgumentNullException("La cotizacion es null");
+            }
+
+            Cotizacion cotizacionEdit =
+                _repositoryCotizacion.GetById(cotizacion.Id);
+            
+            if (cotizacionEdit == null)
+            {
+                throw new NullReferenceException("La Cotizacion a buscar no existe en el sistema");
+            }
+
+            cotizacionEdit.Estado = nuevoEstado;
+
+        }
+
+        public IList<Cotizacion> BuscarCotizacion(string busqueda)
+        {
+            if (String.IsNullOrEmpty(busqueda))
+            {
+                throw new ArgumentNullException("El string de busqueda es null");
+            }
+           
+            
+            //List que contiene las cotizaciones que tienen alguna coincidencia
+            IList<Cotizacion> resultCotizacion= null;
+            
+            // Se asume que es un rut
+            if (int.TryParse(busqueda, out int n))
+            {
+                return resultCotizacion = 
+                    _repositoryCotizacion.GetAll(
+                        c => c.Cliente.Persona.Rut.Contains(busqueda));
+            }
+            
+            // Se asume que es un email
+            if (busqueda.Contains('@'))
+            {
+                return resultCotizacion = 
+                    _repositoryCotizacion.GetAll(
+                        c => c.Cliente.Persona.Email.Contains(busqueda));
+            }
+            
+           //Busqueda se encuentra en el titulo o Descripcion
+            return resultCotizacion = 
+                _repositoryCotizacion.GetAll(
+                    ct => ct.Titulo.Contains(busqueda) || ct.Descripcion.Contains(busqueda) );
+  
+        }
+
+
+
+        /// <inheritdoc />
         public IList<Cotizacion> ObtenerCotizaciones()
         {
             if (_repositoryCotizacion.GetAll().Count == 0)
@@ -234,8 +347,52 @@ namespace Core.Controllers
                 return _repositoryCotizacion.GetAll();
             }
         }
-
+        
+        
+        
+        
+        
+        /*
+         * Operaciones de Sistema - Servicio.
+         */
+        
+        /// <inheritdoc />
         public void GuardarServicio(Servicio servicio)
+        {
+            if (servicio == null)
+            {
+                throw new ModelException("El servicio es null");
+            }
+            
+            
+        }
+
+        public void AñadirServicio(Servicio servicio)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EditarServicio(Servicio servicio)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CambiarEstado(Servicio servicio, EstadoServicio nuevoEstado)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BorrarServicio(Servicio servicio)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BuscarServicio(string busqueda)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DesplegarServicio(string id)
         {
             throw new NotImplementedException();
         }

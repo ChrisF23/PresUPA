@@ -5,7 +5,7 @@ using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 //TODO: Los servicios requieren un repositorio? Vea a la linea 58 de esta clase.
-
+//TODO: Realizar un orden y coordinar como se llevara a cabo el main
 namespace Core
 {
     /// <summary>
@@ -13,7 +13,7 @@ namespace Core
     /// </summary>
     public class App
     {
-        
+
         /// <summary>
         /// Punto de entrada de la aplicacion.
         /// </summary>
@@ -55,93 +55,108 @@ namespace Core
             }
             */
 
+            //Crear persona:
+            Persona persona = new Persona()
             {
-                //Crear persona:
-                Persona persona = new Persona()
-                {
-                    Nombre = "Angel",
-                    Paterno = "Farias",
-                    Materno = "Aguila",
-                    Rut = "142339882",
-                    Email = "Angel.Farias@gmail.com"
-                };
-               
-                //Crear cliente.
-                
-                Cliente cliente = new Cliente()
-                {
-                    Persona = persona,
-                    Tipo = TipoCliente.UnidadInterna
-                };
-                
-                //Crear cotizacion.
-                
-                Cotizacion cotizacion = new Cotizacion()
-                {
-                    Cliente = cliente,
-                    Titulo = "Video resumen 10 años Cemp UCN",
-                    Descripcion = "Grabación, edición y postproducción de video de 3 a 4 minutos " +
-                                  "sobre actividad de los 10 años del Cemp UCN. El valor incluye 2 revisiones previa entrega, postproducción " +
-                                  "de imagen y audio, gráficas de presentación inicio y cierre. Los valores por este trabajo " +
-                                  "son de acuerdo a tarifa especial para unidades pertenecientes a la UCN",
-                    //fechaCreacion = DateTime.Now,
-                };
-                
-                //Crear los servicios.
+                Nombre = "Angel",
+                Paterno = "Farias",
+                Materno = "Aguila",
+                Rut = "142339882",
+                Email = "Angel.Farias@gmail.com"
+            };
 
-                Servicio servicio1 = new Servicio()
-                {
-                    Descripcion = "Video de 3 a 4 Min",
-                    Cantidad = 1,
-                    CostoUnidad = 100000,
-                    Estado = EstadoServicio.Pausa
-                };
-                
-                Servicio servicio2 = new Servicio()
-                {
-                    Descripcion = "Animacion 2D de 2 Min",
-                    Cantidad = 1,
-                    CostoUnidad = 200000,
-                    Estado = EstadoServicio.Pausa
-                };
+            Persona persona2 = new Persona()
+            {
+                Nombre = "German",
+                Paterno = "Rojo",
+                Materno = "Arce",
+                Rut = "194460880",
+                Email = "garojar97@gmail.com"
+            };
 
-                IList<Servicio> servicios = new List<Servicio>();
-                
-                Console.WriteLine(servicio1.Estado);
-                Console.WriteLine(servicio1.Estado.ToString());
-                servicios.Add(servicio1);
-                servicios.Add(servicio2);
 
-                //Asignar los servicios a la cotizacion.
-                cotizacion.Servicios = servicios;
-                
-                //Guardar la cotizacion en la base de datos.
-                sistema.GuardarCotizacion(cotizacion);
-                
-                
-                
-                //-------------------------------
-                //Despliegue:
-                //-------------------------------
+
+
+            
+            
+            
+
+
+
+            //Crear cliente.
+
+            Cliente cliente = new Cliente()
+            {
+                Persona = persona,
+                Tipo = TipoCliente.UnidadInterna
+            };
+
+            //Crear cotizacion.
+
+            Cotizacion cotizacion = new Cotizacion()
+            {
+                Cliente = cliente,
+                Titulo = "Video resumen 10 años Cemp UCN",
+                Descripcion = "Grabación, edición y postproducción de video de 3 a 4 minutos " +
+                              "sobre actividad de los 10 años del Cemp UCN. El valor incluye 2 revisiones previa entrega, postproducción " +
+                              "de imagen y audio, gráficas de presentación inicio y cierre. Los valores por este trabajo " +
+                              "son de acuerdo a tarifa especial para unidades pertenecientes a la UCN",
+                //fechaCreacion = DateTime.Now,
+            };
+
+            //Crear los servicios.
+
+            Servicio servicio1 = new Servicio()
+            {
+                Descripcion = "Video de 3 a 4 Min",
+                Cantidad = 1,
+                CostoUnidad = 100000,
+                Estado = EstadoServicio.Pausa
+            };
+
+            Servicio servicio2 = new Servicio()
+            {
+                Descripcion = "Animacion 2D de 2 Min",
+                Cantidad = 1,
+                CostoUnidad = 200000,
+                Estado = EstadoServicio.Pausa
+            };
+
+            IList<Servicio> servicios = new List<Servicio>();
+
+            Console.WriteLine(servicio1.Estado);
+            Console.WriteLine(servicio1.Estado.ToString());
+            servicios.Add(servicio1);
+            servicios.Add(servicio2);
+
+            //Asignar los servicios a la cotizacion.
+            cotizacion.Servicios = servicios;
+
+            //Guardar la cotizacion en la base de datos.
+            sistema.GuardarCotizacion(cotizacion);
+
+
+
+            //-------------------------------
+            //Despliegue:
+            //-------------------------------
+            {
+
+                IList<Cotizacion> listCotizaciones = sistema.ObtenerCotizaciones();
+                foreach (Cotizacion c in listCotizaciones)
                 {
-
-                    IList<Cotizacion> listCotizaciones = sistema.ObtenerCotizaciones();
-                    foreach (Cotizacion c in listCotizaciones)
+                    Console.WriteLine(Utils.ToJson(c));
+                    IList<Servicio> serviciosCotizacionAnterior = cotizacion.Servicios;
+                    foreach (Servicio s in serviciosCotizacionAnterior)
                     {
-                        Console.WriteLine(Utils.ToJson(c));
-                        IList<Servicio> serviciosCotizacionAnterior = cotizacion.Servicios;
-                        foreach (Servicio s in serviciosCotizacionAnterior)
-                        {
-                            Console.WriteLine(Utils.ToJson(s));
-                            Console.WriteLine(s.Estado);
+                        Console.WriteLine(Utils.ToJson(s));
+                        Console.WriteLine(s.Estado);
 
-                        }
                     }
                 }
-
             }
-            
             Console.WriteLine("Fin de la aplicacion.");
         }
+        
     }
 }
