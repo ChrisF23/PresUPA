@@ -38,11 +38,8 @@ namespace Core.Models
             {
                 throw new ModelException("Se requiere el Password");
             }
-
-            if (Tipo == null)
-            {
-                throw new ModelException("Se requiere un tipo asignado");
-            }
+            
+            
         }
     }
     

@@ -29,12 +29,6 @@ namespace Core.Models
             {
                 throw new ModelException("Se requiere la Persona");
             }
-
-            if (Tipo == null)
-            {
-                throw new ModelException("Se requiere un tipo asignado");
-            }
-
         }
     }
 
