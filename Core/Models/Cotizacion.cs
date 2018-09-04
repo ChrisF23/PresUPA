@@ -15,7 +15,6 @@ namespace Core.Models
         /// <summary>
         /// Identificador de la cotizacion, determinado por el numero de la cotizacion y su version.
         /// </summary>
-        
         [Required]
         public string Identificador { get; set; }
         
@@ -65,7 +64,6 @@ namespace Core.Models
         /// Estado en el cual se encuentra la cotizacion.
         /// </summary>
         public EstadoCotizacion Estado { get; set; }
-
 
         /// <summary>
         /// Calcula y asigna el costo total de esta cotizacion.
@@ -135,6 +133,11 @@ namespace Core.Models
             if (CostoTotal == 0)
             {
                 throw new ModelException("La cotizacion no puede tener un costo total de $0.");
+            }
+
+            if (CostoTotal < 0)
+            {
+                throw new ModelException("La cotizacion no puede tener un costo negativo");
             }
 
             ValidarServicios();

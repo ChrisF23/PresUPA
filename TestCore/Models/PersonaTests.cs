@@ -34,6 +34,7 @@ namespace TestCore.Models
             _output.WriteLine("Creating Persona ..");
             Persona persona = new Persona()
             {
+                //Rut="194460880"
             };
 
             // Error por rut null
