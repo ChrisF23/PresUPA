@@ -40,7 +40,7 @@ namespace TestCore.Controllers
             
             // Insert null
             {
-                Assert.Throws<ModelException>(() => sistema.Save(null));
+                Assert.Throws<ModelException>(() => sistema.Anadir((Persona)null));
             }
             
             // Insert persona
@@ -55,7 +55,7 @@ namespace TestCore.Controllers
                     Email = "durrutia@ucn.cl"
                 };
 
-                sistema.Save(persona);
+                sistema.Anadir(persona);
             }
             
             // GetPersonas
@@ -67,8 +67,8 @@ namespace TestCore.Controllers
             // Buscar persona
             {
                 _output.WriteLine("Testing Find ..");
-                Assert.NotNull(sistema.Find("durrutia@ucn.cl"));
-                Assert.NotNull(sistema.Find("130144918"));
+                Assert.NotNull(sistema.BuscarPersona("durrutia@ucn.cl"));
+                Assert.NotNull(sistema.BuscarPersona("130144918"));
             }
             
             // Busqueda de usuario
@@ -84,11 +84,11 @@ namespace TestCore.Controllers
             
             // Insertar usuario
             {
-                Persona persona = sistema.Find("durrutia@ucn.cl");
+                Persona persona = sistema.BuscarPersona("durrutia@ucn.cl");
                 Assert.NotNull(persona);
                 _output.WriteLine("Persona: {0}", Utils.ToJson(persona));
                 
-                sistema.Save(persona, "durrutia123");
+                sistema.Anadir(persona, "durrutia123");
             }
 
             // Busqueda de usuario

@@ -22,7 +22,8 @@ namespace Core
         private static void Main(string[] args)
         {
             Console.WriteLine("Iniciando la aplicacion...");
-            Sistema sistema = Startup.BuildSistema();
+            ISistema sistema = Startup.BuildSistema();
+            
 
             /* Codigo de ejemplo:
             Console.WriteLine("Creating Persona ..");
@@ -55,6 +56,7 @@ namespace Core
             }
             */
 
+            /* Mas codigo de ejemplo:
             //Crear persona:
             Persona persona = new Persona()
             {
@@ -73,13 +75,6 @@ namespace Core
                 Rut = "194460880",
                 Email = "garojar97@gmail.com"
             };
-
-
-
-
-            
-            
-            
 
 
 
@@ -157,7 +152,66 @@ namespace Core
                 }
             }
             Console.WriteLine("Fin de la aplicacion.");
+            */
+            
+    
+            //Creacion de Usuarios de prueba:
+
+            Console.WriteLine("[1] "+EstadoCotizacion.Borrador);
+
+            
+            Persona pdirector = new Persona()
+            {
+                Rut = "19691840K",
+                Nombre = "Luis",
+                Paterno = "Perez",
+                Email = "luis.p@gmail.com"
+            };
+            
+            Usuario director = new Usuario()
+            {
+                Persona = pdirector,
+                Password = "1234",
+                Tipo = TipoUsuario.Director
+            };
+            
+            sistema.Anadir(director);
+            
+            
+            
+            
+            //Login:
+            Console.WriteLine("Ingrese su rut o email: ");
+            string rutEmail = Console.ReadLine();
+            Console.WriteLine("Ingrese su contrasena: ");
+            string password = Console.ReadLine();
+
+            Usuario usuario = sistema.Login(rutEmail, password);          
+                
+            //Menu:
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("    P r e s U P A    ");
+            Console.WriteLine("--------------------------");
+
+            
+      
+
+            if (usuario.Tipo == TipoUsuario.Director)
+                Consola.MenuDirector(sistema, usuario);
+            else if (usuario.Tipo == TipoUsuario.Productor)
+                Consola.MenuProductor(sistema, usuario);
+            else if (usuario.Tipo == TipoUsuario.Productor)
+                Consola.MenuSupervisor(sistema, usuario);
+            else
+                throw new ModelException("Tipo de usuario no reconocido.");
+
         }
+
         
+
+       
+
+        
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Core.Models
 {
@@ -90,6 +91,8 @@ namespace Core.Models
             foreach (Servicio servicio in Servicios)
                 servicio.Validate();
         }
+
+
 
 
         /// <inheritdoc cref="BaseEntity.Validate"/>
