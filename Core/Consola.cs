@@ -20,19 +20,20 @@ namespace Core
 
                 input = Console.ReadLine();
                 
-                if (input == null) continue;
-                if (input.Equals("1"))
+                switch (input)
                 {
-                    MenuAdministrarCotizaciones(sistema, usuario);
+                    case null:
+                        continue;
+                    case "1":
+                        MenuAdministrarCotizaciones(sistema, usuario);
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        break;
+                    default:
+                        continue;
                 }
-                else if (input.Equals("2"))
-                {
-                }
-                else if (input.Equals("3"))
-                {
-                    
-                }
-
             }
         }
         
@@ -45,115 +46,323 @@ namespace Core
                 Console.WriteLine("[1] Anadir Cotizacion");
                 Console.WriteLine("[2] Borrar Cotizacion");
                 Console.WriteLine("[3] Editar Cotizacion");
-                Console.WriteLine("[4] Buscar Cotizacion");
-                Console.WriteLine("[4] Ver cotizaciones");
+                Console.WriteLine("[4] Cambiar Estado de Cotizacion");
+                Console.WriteLine("[5] Buscar Cotizacion");
+                Console.WriteLine("[6] Ver cotizaciones");
+                //TODO: Enviar cotizacion (German)
                 
                 Console.WriteLine("[0] Salir");
 
                 input = Console.ReadLine();
                 
-                if (input == null) continue;
-                if (input.Equals("1"))
+                switch (input)
                 {
-                    sistema.Anadir(FormularioNuevaCotizacion()); //Almacena la cotizacion creada en el formulario.
-                }
-                else if (input.Equals("2"))
-                {
-                    Console.WriteLine("\n>Borrar Cotizacion");
-            
-                    Console.WriteLine("Ingrese el identificador de la cotizacion que desea borrar:");
-                    string identificador = Console.ReadLine();
+                    case null:
+                        continue;
+                    case "1":
+                    {
+                        FormularioNuevaCotizacion(sistema);
+                        break;
+                    }
+                    case "2":
+                    {
+                        FormularioBorrarCotizacion(sistema);
+                        break;
+                    }
+                    case "3":
+                    {
+                        FormularioEditarCotizacion(sistema);
+                        break;
+                    }
+                    case "4":
+                    {
+                        FormularioCambiarEstadoCotizacion(sistema);
+                        break;
+                    }
+                    case "5":
+                        //TODO: Implementar Busqueda (En el mejor de los casos, Metabusqueda).
+                        break;
                     
-                    sistema.Borrar(identificador);
+                    case "6":
+                    {
+                        MostrarCotizacionesParaDirector(sistema);
+                        break;
+                    }
+                    case "0":
+                        return;
+                    default:
+                        continue;
                 }
-                else if (input.Equals("3"))
-                {
-                    Console.WriteLine("\n>Editar Cotizacion");
-            
-                    Console.WriteLine("Ingrese el identificador de la cotizacion que desea borrar:");
-                    string identificador = Console.ReadLine();
-
-                    Cotizacion cotizacion = sistema.BuscarCotizacion(identificador);
-
-                    FormularioEditarCotizacion(cotizacion);
-                }
-                else if (input.Equals("4"))
-                {
-                    
-                }
-
             }
         }
 
-        //TODO: Completar!
-        public static void FormularioCambiarEstadoCotizacion()
+        /// <summary>
+        /// Muestra todas las cotizaciones que se encuentran en el sistema.
+        /// </summary>
+        /// <param name="sistema"></param>
+        public static void MostrarCotizacionesParaDirector(ISistema sistema)
         {
-            Console.WriteLine("Ingrese el nuevo estado de la cotizacion:");
-            Console.WriteLine("[1] "+EstadoCotizacion.Borrador);
-            Console.WriteLine("[1] "+EstadoCotizacion.Enviada);
-            Console.WriteLine("[1] "+EstadoCotizacion.Aprovada);
-            Console.WriteLine("[1] "+EstadoCotizacion.Rechazada);
-            Console.WriteLine("[1] "+EstadoCotizacion.Terminada);
+            Console.WriteLine("Mostrando Cotizaciones...");
+            try
+            {
+                IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
+                foreach (Cotizacion cotizacion in cotizaciones) 
+                    Console.WriteLine(Utils.ToJson(cotizacion));
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e.Message);
+            }
             
             
-            //sistema.cambiarEstado(idCotizacion, nuevoEstado);
+
+            
+        }
+        
+        /// <summary>
+        /// Muestra solo las cotizaciones que han sido aprovadas.
+        /// </summary>
+        /// <param name="sistema"></param>
+        public static void MostrarCotizacionesParaProductor(ISistema sistema)
+        {
+            Console.WriteLine("Mostrando Cotizaciones...");
+            foreach (Cotizacion cotizacion in sistema.GetCotizaciones())
+                if (cotizacion.Estado == EstadoCotizacion.Aprovada)
+                Console.WriteLine(Utils.ToJson(cotizacion));
+        }
+        
+        /// <summary>
+        /// Muestra solo las cotizaciones que han sido terminadas.
+        /// </summary>
+        /// <param name="sistema"></param>
+        public static void MostrarCotizacionesParaSupervisor(ISistema sistema)
+        {
+            Console.WriteLine("Mostrando Cotizaciones...");
+            foreach (Cotizacion cotizacion in sistema.GetCotizaciones())
+                if (cotizacion.Estado == EstadoCotizacion.Terminada)
+                    Console.WriteLine(Utils.ToJson(cotizacion));
+        }
+        
+        
+
+        public static void FormularioBorrarCotizacion(ISistema sistema)
+        {
+            Console.WriteLine("\n>Borrar Cotizacion");
+
+            Console.WriteLine("Ingrese el identificador de la cotizacion que desea borrar:");
+            string identificador = Console.ReadLine();
+
+            try
+            {
+                sistema.Borrar(identificador);
+                Console.WriteLine("Cotizacion borrada!");
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
+        }
+
+        //TODO: Completar!
+        public static void FormularioCambiarEstadoCotizacion(ISistema sistema)
+        {
+            
+            Console.WriteLine("\n>Cambiar Estado de Cotizacion");
+            
+            Console.WriteLine("Ingrese el identificador de la cotizacion que desea editar:");
+            string identificador = Console.ReadLine();
+
+            EstadoCotizacion estadoAntiguo;
+            
+            try
+            {
+                estadoAntiguo = sistema.BuscarCotizacion(identificador).Estado;   
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            
+            while (true)
+            {
+                
+                //NOTA: Cambiar manualmente al estado "Enviada" no esta permitido.
+                Console.WriteLine("");
+                Console.WriteLine("Ingrese el nuevo estado de la cotizacion:");
+                Console.WriteLine("[1] " + EstadoCotizacion.Borrador);
+                Console.WriteLine("[2] " + EstadoCotizacion.Aprovada);
+                Console.WriteLine("[3] " + EstadoCotizacion.Rechazada);
+                Console.WriteLine("[4] " + EstadoCotizacion.Terminada);
+                Console.WriteLine("[0] Cancelar cambio de estado");
+                
+                string input = Console.ReadLine();
+
+                EstadoCotizacion estadoNuevo;    //Inicia en borrador por defecto.
+                
+                switch (input)
+                {
+                    case null:
+                        continue;
+                    case "1":
+                        estadoNuevo = EstadoCotizacion.Borrador;
+                        break;
+                    case "2":
+                        estadoNuevo = EstadoCotizacion.Aprovada;
+                        break;
+                    case "3":
+                        estadoNuevo = EstadoCotizacion.Rechazada;
+                        break;
+                    case "4":
+                        estadoNuevo = EstadoCotizacion.Terminada;
+                        break;
+                    default:
+                        continue;
+                }
+
+                //Si se ingresa 0, se cancela la operacion y se retorna al menu anterior.
+                if (input.Equals("0"))
+                    break;
+                
+                //Si el estado es el mismo, lanza un mensaje y vuelve al inicio del while.
+                if (estadoNuevo == estadoAntiguo)
+                {
+                    Console.WriteLine("La cotizacion ya se encuentra en este estado.");
+                    continue;
+                }
+
+                //Si se escogio una opcion posible, se intenta cambiar el estado.
+                try
+                {
+                    sistema.CambiarEstado(identificador, estadoNuevo);
+                    Console.WriteLine("Se ha cambiado el estado de la cotizacion.");
+                }
+                catch (ModelException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                break;
+            }
         }
 
 
-        public static void FormularioEditarCotizacion(Cotizacion cotizacion)
+        public static void FormularioEditarCotizacion(ISistema sistema)
         {
-            string input = "...";
-            while (input != null && !input.Equals("0"))
+            
+            Console.WriteLine("\n>Editar Cotizacion");
+            
+            Console.WriteLine("Ingrese el identificador de la cotizacion que desea editar:");
+            string identificador = Console.ReadLine();
+
+            Cotizacion original;
+            try
+            {
+                original = sistema.BuscarCotizacion(identificador);
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            //Se crea una copia parcial de la cotizacion a editar.
+            Cotizacion copy = new Cotizacion()
+            {
+                Identificador = original.Identificador,
+                Titulo = original.Titulo,
+                Descripcion = original.Descripcion,
+                Numero = original.Numero,
+                Version = original.Version,
+                Cliente = original.Cliente,
+                Servicios = original.Servicios,
+                CostoTotal = original.CostoTotal,    
+            };
+            
+            bool exit = false;
+            while (true)
             {
                 Console.WriteLine("\n>Edicion de Cotizacion");
                 
-                Console.WriteLine(Utils.ToJson(cotizacion));
+                Console.WriteLine(Utils.ToJson(copy));
 
                 Console.WriteLine("[1] Editar titulo");
                 Console.WriteLine("[2] Editar descripcion");
                 Console.WriteLine("[3] Editar servicios");
-                Console.WriteLine("[4] Guardar cambios");
+                Console.WriteLine("[4] Editar servicios");
+                Console.WriteLine("[5] Guardar cambios y volver");
                 Console.WriteLine("[0] Cancelar cambios y volver");
                 
-                input = Console.ReadLine();
-                
-                //TODO: Cambiar los ifs por switchs?
-
-                if (input == null) continue;
-                if (input.Equals("1"))
+                string input = Console.ReadLine();
+               
+                switch (input)
                 {
-                    Console.WriteLine("Ingrese el nuevo titulo:");
-                    cotizacion.Titulo = Console.ReadLine();
-                } else if (input.Equals("2"))
-                {
-                    Console.WriteLine("Ingrese la nueva descripcion:");
-                    cotizacion.Titulo = Console.ReadLine();
-                }else if (input.Equals("3"))
-                {
-                    Console.WriteLine("Cantidad de Servicios: "+ cotizacion.Servicios.Count);
-                    int cntr = 0;
-                    foreach (Servicio s in cotizacion.Servicios)
+                    case null:
+                        continue;
+                    case "1":
                     {
-                        Console.WriteLine("Indice: "+(cntr++));
-                        Console.WriteLine(Utils.ToJson(s));
+                        Console.WriteLine("Ingrese el nuevo titulo:");
+                        copy.Titulo = Console.ReadLine();
+                        break;
                     }
+                    case "2":
+                    {
+                        Console.WriteLine("Ingrese la nueva descripcion:");
+                        copy.Descripcion = Console.ReadLine();
+                        break;
+                    }
+                    case "3":
+                    {
+                        Console.WriteLine("Ingrese los datos del cliente::");
+                        copy.Cliente = FormularioNuevoCliente(sistema);
+                        break;
+                    }
+                    case "4":
+                    {
+                        Console.WriteLine("Cantidad de Servicios: " + copy.Servicios.Count);
+                        int cntr = 0;
+                        foreach (Servicio s in copy.Servicios)
+                        {
+                            Console.WriteLine("Indice: " + (cntr++));
+                            Console.WriteLine(Utils.ToJson(s));
+                        }
 
-                    Console.WriteLine("Ingrese el indice del servicio que desea editar");
-                    //TODO: Terminar esto!
+                        Console.WriteLine("Ingrese el indice del servicio que desea editar");
+                        //TODO: Terminar esto!
+                        break;
+                    }
+                    case "5":
+                    {
+                        try
+                        {
+                            sistema.Editar(copy);
+                            Console.WriteLine("Se han guardado los cambios en una nueva version de esta cotizacion.");
+                        }
+                        catch (ModelException e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
 
-                }else if (input.Equals("4"))
-                {
-                   //sistema.anadir(cotizacion);
-                }else if (input.Equals("0"))
-                {
-                    break;
+                        exit = true;
+                        break;
+                    }
+                    case "0":
+                    {
+                        exit = true;
+                        break;
+                    }
+                    default:
+                        continue;
                 }
 
+                if (exit)
+                    break;
             }
             
         }
 
-        public static Cotizacion FormularioNuevaCotizacion()
+        public static void FormularioNuevaCotizacion(ISistema sistema)
         {
             
             Console.WriteLine("\n>Anadir Cotizacion");
@@ -165,7 +374,25 @@ namespace Core
             string descripcion = Console.ReadLine();
 
             Console.WriteLine("Anada al Cliente:");
-            Cliente cliente = FormularioNuevoCliente();
+            
+            Cliente cliente = FormularioNuevoCliente(sistema);
+            while (cliente == null)
+            {
+                Console.WriteLine("Hubo un error al ingresar el Cliente...");
+                Console.WriteLine("[1] Intentar otra vez");
+                Console.WriteLine("[2] Cancelar cotizacion");
+
+                string input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "1":
+                        cliente = FormularioNuevoCliente(sistema);
+                        break;
+                    case "2":
+                        return;    //Volver al menu anterior.
+                }
+            }
 
             List<Servicio> servicios = new List<Servicio>();
 
@@ -176,33 +403,40 @@ namespace Core
                 string input = "...";
                 Servicio servicio = FormularioNuevoServicio();
                 servicios.Add(servicio);
-                
+
                 //Desplegar Servicio:
-                Console.WriteLine("Servicio: "+Utils.ToJson(servicio));
-                
-                Console.WriteLine("[1] Anadir otro servicio");
+                Console.WriteLine("Servicio: " + Utils.ToJson(servicio));
+
+                Console.WriteLine("Se ha anadido el servicio.");
+                Console.WriteLine("[1] Anadir nuevo servicio");
                 Console.WriteLine("[Otro] Terminar de anadir servicios");
+
                 input = Console.ReadLine();
 
                 if (input != null && input.Equals("1"))
                 {
                     continue;
                 }
-                else
-                {
-                    break;
-                }
+
+                break;
             }
             
             //Crear cotizacion:
-            
-            return new Cotizacion()
+            try
             {
-                Titulo = titulo,
-                Descripcion = descripcion,
-                Cliente = cliente,
-                Servicios = servicios
-            };
+                sistema.Anadir(new Cotizacion()
+                {
+                    Titulo = titulo,
+                    Descripcion = descripcion,
+                    Cliente = cliente,
+                    Servicios = servicios
+                }); //Almacena la cotizacion creada en el formulario.
+                Console.WriteLine("Se ha anadido una nueva cotizacion.");
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public static Servicio FormularioNuevoServicio()
@@ -226,27 +460,45 @@ namespace Core
             };
         }
 
-        public static Cliente FormularioNuevoCliente()
+        /// <summary>
+        /// Retorna un nuevo cliente. Si ocurre algun error al ingresar los datos, retorna nulo.
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <returns></returns>
+        public static Cliente FormularioNuevoCliente(ISistema sistema)
         {
+
             TipoCliente tipoCliente = TipoCliente.Otro;
-            
+
             Console.WriteLine(">Anadir Cliente");
-            
+
             Console.WriteLine("Ingrese el rut del cliente:");
             string rut = Console.ReadLine();
-            
+
+            //Comprobacion con la base de datos. Si existe el cliente con tal rut, usarlo.
+            try
+            {
+                Cliente cliente = sistema.BuscarCliente(rut);
+                Console.WriteLine("Utilizando Cliente preregistrado.");
+                return cliente;
+            }
+            catch (ModelException)
+            {
+                //No se encontro un cliente. Seguir.
+            }
+
             Console.WriteLine("Ingrese el nombre del cliente:");
             string nombre = Console.ReadLine();
 
             Console.WriteLine("Ingrese el apellido paterno del cliente:");
             string apellidoP = Console.ReadLine();
-            
+
             Console.WriteLine("Ingrese el apellido materno del cliente (Opcional):");
             string apellidoM = Console.ReadLine();
-            
+
             Console.WriteLine("Ingrese el correo del cliente:");
             string correo = Console.ReadLine();
-            
+
             Console.WriteLine("Pertenece el cliente a la unidad interna? [s/n]:");
             string interno = Console.ReadLine();
 
@@ -254,8 +506,8 @@ namespace Core
             {
                 tipoCliente = TipoCliente.UnidadInterna;
             }
-            
-            Persona pCliente = new Persona()
+
+            Persona nuevaPersona = new Persona()
             {
                 Rut = rut,
                 Nombre = nombre,
@@ -263,12 +515,21 @@ namespace Core
                 Materno = apellidoM,
                 Email = correo
             };
-            
-            return new Cliente()
+
+            try
             {
-                Persona = pCliente,
-                Tipo = tipoCliente
-            };
+                sistema.Anadir(nuevaPersona, tipoCliente);
+                Console.WriteLine("Se ha anadido un nuevo Cliente.");
+
+                return sistema.BuscarCliente(nuevaPersona.Rut);
+
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
+            return null;
         }
 
         public static void MenuProductor(ISistema sistema, Usuario usuario)
@@ -282,9 +543,14 @@ namespace Core
 
                 input = Console.ReadLine();
                 
-                if (input == null) continue;
-                if (input.Equals("1"))
+                switch (input)
                 {
+                    case null:
+                        continue;
+                    case "1":
+                        break;
+                    default:
+                        continue;
                 }
             }
         }
@@ -302,9 +568,14 @@ namespace Core
 
                 input = Console.ReadLine();
 
-                if (input == null) continue;
-                if (input.Equals("1"))
+                switch (input)
                 {
+                    case null:
+                        continue;
+                    case "1":
+                        break;
+                    default:
+                        continue;
                 }
             }
         }
@@ -313,4 +584,4 @@ namespace Core
         
         
     }
-}
+} 

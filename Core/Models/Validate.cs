@@ -21,6 +21,17 @@ namespace Core.Models
                 throw new ModelException("Rut no valido");
             }
 
+            /*
+            
+            //No funciona:
+            //[+] Elimina los guiones que se ingresen.
+            rut = rut.Replace("-", "");
+            
+            //[+] Se asegura de que la K siempre este en mayuscula.
+            rut = rut.ToUpper();
+            
+             */
+            
             try
             {
                 int rutNumber = Convert.ToInt32(rut.Substring(0, rut.Length - 1));
@@ -45,6 +56,8 @@ namespace Core.Models
 
         }
 
+
+
         /// <summary>
         /// Metodo que valida un email
         /// </summary>
@@ -62,11 +75,32 @@ namespace Core.Models
                 throw new ModelException("El email tiene un formato invalido");
             }
 
+        }
 
-
-
+        /// <summary>
+        /// Metodo que compara dos cotizaciones y ve si algunos
+        /// atributos especificos son iguales.
+        /// </summary>
+        /// <param name="cot1"></param>
+        /// <param name="cot2"></param>
+        /// <returns></returns>
+        public static bool CompararCotizaciones(Cotizacion cot1, Cotizacion cot2)
+        {
+            
+            //Retorna true si los siguientes atributos son iguales.
+            if (cot1.Titulo.Equals(cot2.Titulo) &&
+                cot1.Descripcion.Equals(cot2.Descripcion) &&
+                cot1.Numero.Equals(cot2.Numero) &&
+                cot1.Version.Equals(cot2.Version) &&
+                cot1.Cliente.Equals(cot2.Cliente) &&
+                cot1.Servicios.Equals(cot2.Servicios))
+            {
+                return true;
+            }
+            //Retorna false si alguno es distinto.
+            return false;
 
         }
-        
+
     }
 }

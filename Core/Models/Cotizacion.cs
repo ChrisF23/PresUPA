@@ -69,9 +69,8 @@ namespace Core.Models
         /// <summary>
         /// Calcula y asigna el costo total de esta cotizacion.
         /// </summary>
-        public void CalcularCostoTotal()
+        public void CalcularMiCostoTotal()
         {
-            
             CostoTotal = 0;
 
             if (Servicios != null)
@@ -81,19 +80,11 @@ namespace Core.Models
             }
         }
 
-        public void AsignarServicios()
-        {
-           
-        }
-
-        private void ValidarServicios()
+        private void ValidarMisServicios()
         {
             foreach (Servicio servicio in Servicios)
                 servicio.Validate();
         }
-
-
-
 
         /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
@@ -133,6 +124,10 @@ namespace Core.Models
                 throw new ModelException("La cotizacion no tiene servicios asignados.");
             }
 
+            ValidarMisServicios();
+            
+            CalcularMiCostoTotal();
+            
             if (CostoTotal == 0)
             {
                 throw new ModelException("La cotizacion no puede tener un costo total de $0.");
@@ -142,8 +137,8 @@ namespace Core.Models
             {
                 throw new ModelException("La cotizacion no puede tener un costo negativo");
             }
-
-            ValidarServicios();
+            
+            
         }
     }
     /// <summary>

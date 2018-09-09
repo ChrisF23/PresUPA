@@ -17,5 +17,7 @@ namespace Core
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
+        
+        
     }
 }

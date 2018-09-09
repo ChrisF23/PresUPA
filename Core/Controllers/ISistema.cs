@@ -24,8 +24,8 @@ namespace Core.Controllers
         /// <summary>
         /// OS_CO003: Edita los datos de una cotizacion
         /// </summary>
-        /// <param name="idCotizacion"></param>
-        void Editar(string idCotizacion);
+        /// <param name="cotizacion"></param>
+        void Editar(Cotizacion cotizacion);
         
         /// <summary>
         /// OS_CO004: Cambia el estado de una cotizacion
@@ -117,9 +117,15 @@ namespace Core.Controllers
         //    Operaciones de Sistema: Cliente (OS_CLXXX)
         //------------------------------------------------------------------------------
 
-        void Anadir(Cliente cliente);
-
-        void Buscar(string rutEmail);
+        void Anadir(Persona persona, TipoCliente tipoCliente);
+       
+        /// <summary>
+        /// OS_CL002: Busca al cliente segun su rut.
+        /// Agiliza la insercion de un cliente a una cotizacion.
+        /// </summary>
+        /// <param name="rut"></param>
+        /// <returns></returns>
+        Cliente BuscarCliente(string rut);
 
         void Desplegar(string rut);
         
