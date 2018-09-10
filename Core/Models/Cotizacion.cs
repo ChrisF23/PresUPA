@@ -143,9 +143,26 @@ namespace Core.Models
                 + "Descripcion: " + Descripcion + "\n"
                 + "Fecha de Creacion: " + FechaCreacion + "\n"
                 + "Cliente: " + Cliente.ToString() + "\n"
-                + "Servicios: " + Servicios.ToString() + "\n"
-                + "Costo Total: " + CostoTotal;
+                + "Servicios: " + MisServiciosToString() + "\n"
+                + "Costo Total: $" + CostoTotal;
         }
+
+        public string MisServiciosToString()
+        {
+            string ts = "";
+            if (Servicios != null)
+            {
+                int counter = 0;
+                foreach (Servicio servicio in Servicios)
+                {
+                    ts = String.Concat(ts, "\nServicio ", ++counter, ":\n");
+                    ts = String.Concat(ts, servicio.ToString(), "\n");
+                }
+            }
+
+            return ts;
+        }
+
     }
     /// <summary>
     /// Enumeracion con los distintos estados de la cotizacion

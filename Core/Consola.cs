@@ -22,8 +22,6 @@ namespace Core
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         MenuAdministrarCotizaciones(sistema, usuario);
                         break;
@@ -57,8 +55,6 @@ namespace Core
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                     {
                         FormularioNuevaCotizacion(sistema);
@@ -114,10 +110,6 @@ namespace Core
             {
                 Console.WriteLine(e.Message);
             }
-            
-            
-
-            
         }
         
         /// <summary>
@@ -204,8 +196,6 @@ namespace Core
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         estadoNuevo = EstadoCotizacion.Borrador;
                         break;
@@ -299,8 +289,6 @@ namespace Core
                
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                     {
                         Console.WriteLine("Ingrese el nuevo titulo:");
@@ -380,7 +368,7 @@ namespace Core
             {
                 Console.WriteLine("Hubo un error al ingresar el Cliente...");
                 Console.WriteLine("[1] Intentar otra vez");
-                Console.WriteLine("[2] Cancelar cotizacion");
+                Console.WriteLine("[Otro] Cancelar cotizacion");
 
                 string input = Console.ReadLine();
 
@@ -389,7 +377,7 @@ namespace Core
                     case "1":
                         cliente = FormularioNuevoCliente(sistema);
                         break;
-                    case "2":
+                    default:
                         return;    //Volver al menu anterior.
                 }
             }
@@ -439,7 +427,7 @@ namespace Core
                     Console.WriteLine(e.Message);
                     Console.WriteLine("Hubo un error al ingresar el servicio...");
                     Console.WriteLine("[1] Intentar otra vez");
-                    Console.WriteLine("[2] Cancelar cotizacion");
+                    Console.WriteLine("[Otro] Cancelar cotizacion");
 
                     input = Console.ReadLine();
 
@@ -447,7 +435,7 @@ namespace Core
                     {
                         case "1":
                             continue;    //Repite el ciclo.
-                        case "2":
+                        default:
                             return;    //Volver al menu anterior.
                     }
                 }
@@ -554,7 +542,7 @@ namespace Core
             }
             catch (ModelException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);    //Solo mostrara el primer error que ocurra.
             }
             
             return null;
@@ -573,8 +561,6 @@ namespace Core
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         break;
                     default:
@@ -598,8 +584,6 @@ namespace Core
 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         break;
                     default:
