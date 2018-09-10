@@ -67,5 +67,13 @@ namespace Core.Models
             
             Models.Validate.ValidarEmail(Email);
         }
+
+        public override string ToString()
+        {
+            return
+                "Rut: " + Rut +
+                "\nNombre: " + String.Concat(Nombre, " ", Paterno, " ", Materno) +
+                "\nEmail: " + Email;
+        }
     }
 }

@@ -134,17 +134,18 @@ namespace Core.Models
             }
             
         }
-        
+
         public override string ToString()
         {
             return
-                "Identificador: " + Identificador + "\n"
-                + "Titulo: " + Titulo + "\n"
-                + "Descripcion: " + Descripcion + "\n"
-                + "Fecha de Creacion: " + FechaCreacion + "\n"
-                + "Cliente: " + Cliente.ToString() + "\n"
-                + "Servicios: " + MisServiciosToString() + "\n"
-                + "Costo Total: $" + CostoTotal;
+                "Identificador: " + Identificador +
+                "\nTitulo: " + Titulo +
+                "\nDescripcion: " + Descripcion +
+                "\nFecha de Creacion: " + FechaCreacion +
+                "\n\n>Cliente: \n\n" + Cliente.ToString() +
+                "\n\n>Servicios: \n" + MisServiciosToString() +
+                "\nCosto Total: $" + CostoTotal +
+                "\nEstado: " + Estado;
         }
 
         public string MisServiciosToString()
@@ -155,7 +156,7 @@ namespace Core.Models
                 int counter = 0;
                 foreach (Servicio servicio in Servicios)
                 {
-                    ts = String.Concat(ts, "\nServicio ", ++counter, ":\n");
+                    ts = String.Concat(ts, "\n>>Servicio ", ++counter, ":\n");
                     ts = String.Concat(ts, servicio.ToString(), "\n");
                 }
             }

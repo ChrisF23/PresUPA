@@ -49,7 +49,7 @@ namespace Core
                 Console.WriteLine("[6] Ver cotizaciones");
                 //TODO: Enviar cotizacion (German)
                 
-                Console.WriteLine("[0] Salir");
+                Console.WriteLine("[0] Volver al menu anterior");
 
                 input = Console.ReadLine();
                 
@@ -98,13 +98,16 @@ namespace Core
         /// <param name="sistema"></param>
         public static void MostrarCotizacionesParaDirector(ISistema sistema)
         {
-            Console.WriteLine("Mostrando Cotizaciones...");
+            Console.WriteLine("Mostrando Cotizaciones...\n");
             try
             {
                 IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
                 foreach (Cotizacion cotizacion in cotizaciones)
-                    //Console.WriteLine(Utils.ToJson(cotizacion));
-                    Console.WriteLine(cotizacion.ToString());
+                {
+                    Console.WriteLine("--------------------------");
+                    Console.WriteLine("\n" + cotizacion.ToString());
+                }
+                Console.WriteLine("--------------------------\n");
             }
             catch (NullReferenceException e)
             {
@@ -276,11 +279,12 @@ namespace Core
             {
                 Console.WriteLine("\n>Edicion de Cotizacion");
                 
-                Console.WriteLine(Utils.ToJson(copy));
-
+                //Console.WriteLine(Utils.ToJson(copy));
+                Console.WriteLine(copy.ToString());
+                
                 Console.WriteLine("[1] Editar titulo");
                 Console.WriteLine("[2] Editar descripcion");
-                Console.WriteLine("[3] Editar servicios");
+                Console.WriteLine("[3] Cambiar cliente");
                 Console.WriteLine("[4] Editar servicios");
                 Console.WriteLine("[5] Guardar cambios y volver");
                 Console.WriteLine("[0] Cancelar cambios y volver");
@@ -303,8 +307,30 @@ namespace Core
                     }
                     case "3":
                     {
-                        Console.WriteLine("Ingrese los datos del cliente::");
-                        copy.Cliente = FormularioNuevoCliente(sistema);
+                        Console.WriteLine("Ingrese los datos del nuevo cliente:");
+                        Cliente nuevoCliente = FormularioNuevoCliente(sistema);
+                        
+                        while (nuevoCliente == null)
+                        {
+                            Console.WriteLine("Hubo un error al ingresar los datos del nuevo cliente...");
+                            Console.WriteLine("[1] Intentar otra vez");
+                            Console.WriteLine("[Otro] Mantener cliente anterior");
+
+                            input = Console.ReadLine();
+
+                            if (input == "1")
+                                nuevoCliente = FormularioNuevoCliente(sistema);
+                            else
+                                break;
+                        }
+
+                        if (nuevoCliente != null)
+                        {
+                            copy.Cliente = nuevoCliente;
+                            Console.WriteLine("Cliente actualizado.");
+                        }
+                        else
+                            Console.WriteLine("Se ha cancelado el cambio de cliente.");
                         break;
                     }
                     case "4":
@@ -406,10 +432,10 @@ namespace Core
                 {
                     sistema.Anadir(nuevoServicio, nuevaCotizacion);
                     
-                    Console.WriteLine("Servicio anadido:");
+                    Console.WriteLine("Servicio anadido:\n");
                     Console.WriteLine(nuevoServicio.ToString());
                     
-                    Console.WriteLine("[1] Anadir nuevo servicio");
+                    Console.WriteLine("\n[1] Anadir nuevo servicio");
                     Console.WriteLine("[Otro] Terminar de anadir servicios");
 
                     input = Console.ReadLine();

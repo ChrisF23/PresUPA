@@ -119,6 +119,9 @@ namespace Core.Controllers
             if (idCotizacion == null)
                 throw new ModelException("El identificador ingresado fue nulo.");
             
+            if (string.IsNullOrEmpty(idCotizacion))
+                throw new ModelException("El identificador ingresado esta vacio.");
+            
             //Buscar y borrar.
             _repositoryCotizacion.Remove(BuscarCotizacion(idCotizacion));
         }
