@@ -272,7 +272,7 @@ namespace Core.Controllers
             Usuario usuario = usuarios.Single();
             if (!BCrypt.Net.BCrypt.Verify(password, usuario.Password))
             {
-                throw new ModelException("Password no coincide");
+                throw new ModelException("Contrasena incorrecta!");
             }
 
             return usuario;

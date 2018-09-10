@@ -16,7 +16,7 @@ namespace Core
                 Console.WriteLine("[1] Administrar Cotizaciones");
                 Console.WriteLine("[2] Administrar Clientes");
                 Console.WriteLine("[3] Administrar Usuarios");
-                Console.WriteLine("[0] Salir");
+                Console.WriteLine("[0] Cerrar Sesion");
 
                 input = Console.ReadLine();
                 
@@ -28,6 +28,9 @@ namespace Core
                     case "2":
                         break;
                     case "3":
+                        break;
+                    case "0":
+                        Console.WriteLine("\nCerrando Sesion...");
                         break;
                     default:
                         continue;
@@ -104,8 +107,8 @@ namespace Core
                 IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
                 foreach (Cotizacion cotizacion in cotizaciones)
                 {
-                    Console.WriteLine("--------------------------");
-                    Console.WriteLine("\n" + cotizacion.ToString());
+                    Console.WriteLine("\n--------------------------");
+                    Console.WriteLine(cotizacion.ToString());
                 }
                 Console.WriteLine("--------------------------\n");
             }
@@ -195,7 +198,7 @@ namespace Core
                 
                 string input = Console.ReadLine();
 
-                EstadoCotizacion estadoNuevo;    //Inicia en borrador por defecto.
+                EstadoCotizacion estadoNuevo = EstadoCotizacion.Borrador;    //Inicia en borrador por defecto.
                 
                 switch (input)
                 {
@@ -210,6 +213,8 @@ namespace Core
                         break;
                     case "4":
                         estadoNuevo = EstadoCotizacion.Terminada;
+                        break;
+                    case "0":
                         break;
                     default:
                         continue;
@@ -416,14 +421,12 @@ namespace Core
                 Cliente = cliente
             };
             
+            Console.WriteLine(">>Anadir Servicios");
+            
             //Obtener los servicios y anadirlos a la cotizacion.
             while (true)
             {
-                
-                //TODO: FIX ME.
-                
                 string input = "...";
-
 
                 Servicio nuevoServicio = FormularioNuevoServicio();
 
