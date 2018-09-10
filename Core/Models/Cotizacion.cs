@@ -164,6 +164,13 @@ namespace Core.Models
             return ts;
         }
 
+        public string ToStringBrief()
+        {
+            return "Identificador: " + Identificador +
+                   "\nTitulo: " + Titulo +
+                   "\nDescripcion: " + Descripcion +
+                   "\nEstado: " + Estado;
+        }
     }
     /// <summary>
     /// Enumeracion con los distintos estados de la cotizacion

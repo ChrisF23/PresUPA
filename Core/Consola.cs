@@ -55,7 +55,6 @@ namespace Core
                 Console.WriteLine("[5] Buscar Cotizacion");
                 Console.WriteLine("[6] Ver cotizaciones");
                 Console.WriteLine("[7] Enviar Cotizacion");
-                //TODO: Enviar cotizacion (German)
                 
                 Console.WriteLine("[0] Volver al menu anterior");
 
@@ -94,7 +93,7 @@ namespace Core
                     }
                     case "7":
                     {
-                        GenerarEmail(sistema);
+                        FormularioEnviarCotizacion(sistema, usuario);
                         break;
                     }
                     case "0":
@@ -588,68 +587,117 @@ namespace Core
         }
 
 
-        public static void GenerarEmail(ISistema sistema)
+        public static void FormularioEnviarCotizacion(ISistema sistema, Usuario usuario)
         {
             
+            Console.WriteLine("\n>Enviar Cotizacion");
             
-            Console.WriteLine("Seleccione la cotizacion a enviar: ");
-            Cotizacion CotizacionEmail;  
-           
-            foreach( Cotizacion c in sistema.GetCotizaciones())
-            {
-                Console.WriteLine(c.Titulo);
-                Console.WriteLine(c.Identificador);
-            }
-           
-            Console.WriteLine("Ingresa la id :");
-            string idCotizacion = Console.ReadLine();
+            Cotizacion cotizacionEnviar;
 
+            IList<Cotizacion> cotizaciones = null;
+            
             try
             {
-                CotizacionEmail = sistema.BuscarCotizacion(idCotizacion);
+                cotizaciones = sistema.GetCotizaciones();
             }
             catch (ModelException e)
             {
-                Console.WriteLine("No existe cotizacion que tenga esa id");
+                Console.WriteLine(e);
+                return;    //Volver si no hay cotizaciones u ocurre otro error.
+            }
+            
+            //Despliegue resumido de las cotizaciones:
+            foreach(Cotizacion c in cotizaciones)
+            {
+                Console.WriteLine("\n---------------");
+                Console.WriteLine(c.ToStringBrief());
+            }
+            Console.WriteLine("---------------\n");
+
+            Console.WriteLine("Ingrese el identificador de la cotizacion que desea enviar:");
+            string identificador = Console.ReadLine();
+
+            //Obtener cotizacion con el identificador ingresado:
+            try
+            {
+                cotizacionEnviar = sistema.BuscarCotizacion(identificador);
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
                 return;
             }
-
-            MailMessage email = new MailMessage()
+            
+            //Seleccion del remitente:
+            
+            string remitente = null;
+            string input = "...";
+            while (true)
             {
-                Subject = "Cotizacion "+CotizacionEmail.Titulo,
+                Console.WriteLine("\n>Seleccione el Email del remitente:");
+                Console.WriteLine("[1] Usar Email de UPA");
+                Console.WriteLine("[2] Usar mi Email");
+                Console.WriteLine("[0] Cancelar envio");
+
+                input = Console.ReadLine();
+                
+                switch (input)
+                {
+                    case "1":
+                        remitente = sistema.EmailUpa;
+                        break;
+                    case "2":
+                        remitente = usuario.Persona.Email;
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        continue;
+                }
+                
+                break;
+            }
+            
+            //Ingresar contrasena del Email del remitente:
+
+            Console.WriteLine("\n>Ingrese la contrasena del Email:");
+            Console.WriteLine("Email: " + remitente);
+            Console.Write("Contrasena: ");
+
+            string emailPassword = Console.ReadLine();
+            
+            //Destinatario:
+            string destinatario = cotizacionEnviar.Cliente.Persona.Email;
+            
+            //Creacion del Email:
+            MailMessage mailMessage = new MailMessage()
+            {
+                Subject =
+                    String.Concat("Cotizacion UPA N°", cotizacionEnviar.Numero, " Ver ", cotizacionEnviar.Version),
                 IsBodyHtml = true,
                 Body = @"<html>
                         <body>
-                        <h1>"+CotizacionEmail.Titulo+@"</h1>
-                        <h2>Datos</h2>
-                        <p>Numero: "+CotizacionEmail.Numero+@"</p>
-                        <p>Version: "+CotizacionEmail.Version+@"</p>
-                        <p>Descripcion: "+CotizacionEmail.Descripcion+@"</p>
-                        <p>Costo Total: "+CotizacionEmail.CostoTotal+@"</p>
-                        <p>Estado : "+CotizacionEmail.Estado.ToString()+@"</p>
-                        <h1>Servicios</h1>
-                        <p>"+CotizacionEmail.Servicios.ToString()+@"</p>
+                        <h1>" + cotizacionEnviar.Titulo + @"</h1>
+                        <h2>Descripcion: " + cotizacionEnviar.Descripcion + @"</h2>
+                        <h2>Servicios</h2>
+                        <p>" + cotizacionEnviar.MisServiciosToString() + @"<br></p>
+                        <p><b>Costo Total: " + cotizacionEnviar.CostoTotal + @"</b></p>
                         </body>
                         </html>
                         "
             };
-            
-            
-            sistema.EnviarEmail(CotizacionEmail.Cliente.Persona.Email,email);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+            try
+            {
+                sistema.EnviarEmail(remitente, emailPassword, destinatario, mailMessage);
+                Console.WriteLine("Se ha enviado la cotizacion!");
+            }
+            catch (Exception e)
+            {
+                //Puede ser una SmtpException o un ModelException
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Se ha cancelado el envio debido a un problema.");
+            }
         }
         
 

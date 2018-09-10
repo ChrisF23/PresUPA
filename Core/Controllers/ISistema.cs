@@ -6,6 +6,8 @@ namespace Core.Controllers
 {
     public interface ISistema
     {
+        string EmailUpa { get; }
+        
         //------------------------------------------------------------------------------
         //    Operaciones de Sistema: Cotizaciones (OS_COXXX)
         //------------------------------------------------------------------------------
@@ -52,6 +54,8 @@ namespace Core.Controllers
         /// </summary>
         /// <returns></returns>
         IList<Cotizacion> GetCotizaciones();
+
+        //void Enviar(string idCotizacion);
         
         //------------------------------------------------------------------------------
         //    Operaciones de Sistema: Usuario (OS_USXXX)
@@ -128,7 +132,7 @@ namespace Core.Controllers
 
         void Desplegar(string rut);
 
-        void EnviarEmail(string email,MailMessage mensaje);
+        void EnviarEmail(string remitente, string emailPassword, string destinatario, MailMessage mailMessage);
         
         IList<Cliente> GetClientes();
     }

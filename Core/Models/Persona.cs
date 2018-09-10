@@ -66,7 +66,9 @@ namespace Core.Models
                 throw new ModelException("Email no puede ser null o vacio.");
             }
     
-            MailAddress mail  = new MailAddress(Email);
+            //TODO: ???
+            Models.Validate.ValidarEmail(Email);
+            //MailAddress mail  = new MailAddress(Email);
         }
 
         public override string ToString()

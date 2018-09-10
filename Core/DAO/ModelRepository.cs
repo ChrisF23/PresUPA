@@ -16,7 +16,7 @@ namespace Core.DAO
         /// <summary>
         /// Referencia a la base de datos.
         /// </summary>
-        protected readonly DbContext _dbContext;
+        protected readonly DbContext DbContext;
 
         /// <summary>
         /// Tipo especifico de la clase.
@@ -29,7 +29,7 @@ namespace Core.DAO
         /// <param name="dbContext">Acceso a la base de datos</param>
         public ModelRepository(DbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentException("Se requiere el DbContext!");
+            DbContext = dbContext ?? throw new ArgumentException("Se requiere el DbContext!");
         }
         
         /// <inheritdoc />
@@ -45,33 +45,33 @@ namespace Core.DAO
             entity.Validate();
 
             // Si ya tengo id, solo es necesario actualizar.
-            _dbContext.Entry(entity).State = entity.Id == 0 ?EntityState.Added : EntityState.Modified;            
-            _dbContext.SaveChanges();
+            DbContext.Entry(entity).State = entity.Id == 0 ?EntityState.Added : EntityState.Modified;            
+            DbContext.SaveChanges();
         }
 
         /// <inheritdoc />
         public void Remove(T entity)
         {
-            _dbContext.Set<T>().Remove(entity);
-            _dbContext.SaveChanges();
+            DbContext.Set<T>().Remove(entity);
+            DbContext.SaveChanges();
         }
         
         /// <inheritdoc />
         public IList<T> GetAll()
         {
-            return _dbContext.Set<T>().ToList();
+            return DbContext.Set<T>().ToList();
         }
 
         /// <inheritdoc />
         public T GetById(int id)
         {
-            return _dbContext.Set<T>().Find(id);
+            return DbContext.Set<T>().Find(id);
         }
 
         /// <inheritdoc />
         public IList<T> GetAll(Expression<Func<T, bool>> expression)
         {
-            return _dbContext.Set<T>().Where(expression).ToList();
+            return DbContext.Set<T>().Where(expression).ToList();
         }
     }
 }

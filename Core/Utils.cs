@@ -17,7 +17,30 @@ namespace Core
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
+
+        public static readonly string SmtpServerGmail = "gmail";
+        public static readonly string SmtpServerOutlook = "live";
+        public static readonly string SmtpServerOffice365 = "office365";
+
+        /*
+        public static readonly string[,] SmptServersAndPorts = new string[,]
+        {
+            {SmptServerGmail, "587"},
+            {SmptServerOutlook, "587"},
+            {SmptServerHotmail, "465"},
+            {SmptServerOffice365, "587"}
+        };
+        */
         
+        public static readonly string[] SmtpServers = new string[]
+        {
+            SmtpServerGmail,
+            SmtpServerOutlook,
+            SmtpServerOffice365
+        };
         
+
+
+
     }
 }

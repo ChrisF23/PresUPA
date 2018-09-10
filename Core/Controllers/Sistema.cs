@@ -16,6 +16,9 @@ namespace Core.Controllers
     /// </summary>
     public sealed class Sistema : ISistema
     {
+        
+        public string EmailUpa { get; }
+
         // Patron Repositorio, generalizado via Generics
         // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/
         private readonly IRepository<Persona> _repositoryPersona;
@@ -25,11 +28,9 @@ namespace Core.Controllers
         private readonly IRepository<Cotizacion> _repositoryCotizacion;
 
         private readonly IRepository<Cliente> _repositoryCliente;
-        
-        
-        
-        private int LastCotizacionNumber;
-        
+
+        private int _lastCotizacionNumber;
+
         /// <summary>
         /// Inicializa los repositorios internos de la clase.
         /// </summary>
@@ -39,6 +40,8 @@ namespace Core.Controllers
             IRepository<Cotizacion> repositoryCotizacion,
             IRepository<Cliente> repositoryCliente)
         {
+            EmailUpa = "upaucnproyecto@outlook.com";
+            
             // Setter!
             _repositoryPersona = repositoryPersona ??
                                  throw new ArgumentNullException("Se requiere el repositorio de personas");
@@ -63,13 +66,13 @@ namespace Core.Controllers
             if (x.Count > 0)
             {
                 var numero = x.OrderByDescending(c => c.Numero).First().Numero;
-                LastCotizacionNumber = numero ?? 259;
+                _lastCotizacionNumber = numero ?? 300;
 
             }
             else
             {
-                //La lista no contiene elementos -> Usar 259 por defecto.
-                LastCotizacionNumber = 259;
+                //La lista no contiene elementos -> Usar 300 por defecto.
+                _lastCotizacionNumber = 300;
             }
 
         }
@@ -91,7 +94,7 @@ namespace Core.Controllers
             //Si no lo es, entonces se conserva su numero.
             if (cotizacion.Numero == null)
             {
-                cotizacion.Numero = ++LastCotizacionNumber;
+                cotizacion.Numero = ++_lastCotizacionNumber;
             }
             
             //Si la version de la cotizacion es null, entonces es la primera version.
@@ -433,20 +436,69 @@ namespace Core.Controllers
             throw new NotImplementedException();
         }
 
-        public void EnviarEmail(string email, MailMessage mensaje)
+        public void EnviarEmail(string remitente, string emailPassword, string destinatario, MailMessage mailMessage)
         {
-            SmtpClient client = new SmtpClient("smtp.live.com", 587)
+            if (String.IsNullOrEmpty(emailPassword))
             {
-                Credentials = new NetworkCredential("upaucnproyecto@outlook.com", "upa123123"),
+                throw new ModelException("La contrasena ingresada esta vacia.");
+            }
+
+            if (String.IsNullOrEmpty(remitente))
+            {
+                throw new ModelException("El Email del remitente esta vacio.");
+            }
+            
+            if (String.IsNullOrEmpty(destinatario))
+            {
+                throw new ModelException("El Email del destinatario esta vacio.");
+            }
+            
+            if (mailMessage == null)
+            {
+                throw new ModelException("El Email fue nulo.");
+            }
+            
+            //"smtp.live.com", 587
+            
+            //Es necesario especificar el servidor!
+
+            string servidor = null;
+            
+            //Si el remitente pertenece a los dominios de ucn.cl, usar servidor gmail.
+            if (remitente.EndsWith("ucn.cl"))
+            {
+                servidor = "smtp.gmail.com";
+            }
+            
+            //Si no, buscar en los servidores guardados.
+            else
+            {
+                foreach (string server in Utils.SmtpServers)
+                {
+                    if (remitente.Contains(server))
+                    {
+                        servidor = "smtp." + server + ".com";
+                        break;
+                    }
+                }
+            }
+            
+
+            if (servidor == null)
+                throw new SmtpException("El sistema no conoce el servidor remitente.");
+
+            SmtpClient client = new SmtpClient(servidor, 587)
+            {
+                Credentials = new NetworkCredential(remitente, emailPassword),
                 EnableSsl = true
             };
 
-            mensaje.From = new MailAddress("upaucnproyecto@outlook.com");
-            mensaje.To.Add(email);
-            //mensaje.IsBodyHtml = false;
+            mailMessage.From = new MailAddress(remitente);
+            mailMessage.To.Add(destinatario);
+            //mensaje.    IsBodyHtml = false;
             //mensaje.Body = "body";
-
-            client.Send(mensaje); 
+            
+            client.Send(mailMessage); 
         }
         
     }
