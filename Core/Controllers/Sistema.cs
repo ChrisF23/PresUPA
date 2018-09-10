@@ -108,6 +108,9 @@ namespace Core.Controllers
                 cotizacion.Version += 1;
             }
             
+            //Establece la fecha de creacion:
+            cotizacion.FechaCreacion = DateTime.Now;
+            
             //Asigna su identificador.
             cotizacion.Identificador = (cotizacion.Numero.ToString() +"v"+ cotizacion.Version.ToString());
             

@@ -669,19 +669,31 @@ namespace Core
             //Destinatario:
             string destinatario = cotizacionEnviar.Cliente.Persona.Email;
             
+            
+            //Guardando todos los servicios de la cotizacion:
+            string servicios = null;
+
+            foreach (Servicio servicio in cotizacionEnviar.Servicios)
+            {
+                servicios += "<p><b>" + servicio.Descripcion + @"<b></p>
+                <p>Cantidad: " + servicio.Cantidad + @"</p>
+                <p>Costo Unidad: $" + servicio.CostoUnidad + @"</p>
+                <p><b>Sub total: $" + (servicio.Cantidad * servicio.CostoUnidad) + @"<b></p><br>";
+            }
+            
             //Creacion del Email:
             MailMessage mailMessage = new MailMessage()
             {
-                Subject =
-                    String.Concat("Cotizacion UPA N°", cotizacionEnviar.Numero, " Ver ", cotizacionEnviar.Version),
+                Subject ="Cotizacion UPA N°" + cotizacionEnviar.Numero + 
+                         " Version " + cotizacionEnviar.Version,
                 IsBodyHtml = true,
                 Body = @"<html>
                         <body>
-                        <h1>" + cotizacionEnviar.Titulo + @"</h1>
+                        <p><b>Fecha: " + cotizacionEnviar.FechaCreacion.Date + @"</b></p>
+                        <h1>Titulo: " + cotizacionEnviar.Titulo + @"</h1>
                         <h2>Descripcion: " + cotizacionEnviar.Descripcion + @"</h2>
-                        <h2>Servicios</h2>
-                        <p>" + cotizacionEnviar.MisServiciosToString() + @"<br></p>
-                        <p><b>Costo Total: " + cotizacionEnviar.CostoTotal + @"</b></p>
+                        <h2>Servicios:</h2>" + servicios +
+                       "<br><p><b>Costo Total: $" + cotizacionEnviar.CostoTotal + @"</b></p>
                         </body>
                         </html>
                         "
