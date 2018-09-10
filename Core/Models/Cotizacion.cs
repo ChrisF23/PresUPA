@@ -128,17 +128,23 @@ namespace Core.Models
             
             CalcularMiCostoTotal();
             
-            if (CostoTotal == 0)
+            if (CostoTotal <= 0)
             {
-                throw new ModelException("La cotizacion no puede tener un costo total de $0.");
-            }
-
-            if (CostoTotal < 0)
-            {
-                throw new ModelException("La cotizacion no puede tener un costo negativo");
+                throw new ModelException("La cotizacion debe tener un costo total superior a $0.");
             }
             
-            
+        }
+        
+        public override string ToString()
+        {
+            return
+                "Identificador: " + Identificador + "\n"
+                + "Titulo: " + Titulo + "\n"
+                + "Descripcion: " + Descripcion + "\n"
+                + "Fecha de Creacion: " + FechaCreacion + "\n"
+                + "Cliente: " + Cliente.ToString() + "\n"
+                + "Servicios: " + Servicios.ToString() + "\n"
+                + "Costo Total: " + CostoTotal;
         }
     }
     /// <summary>

@@ -106,8 +106,9 @@ namespace Core
             try
             {
                 IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
-                foreach (Cotizacion cotizacion in cotizaciones) 
-                    Console.WriteLine(Utils.ToJson(cotizacion));
+                foreach (Cotizacion cotizacion in cotizaciones)
+                    //Console.WriteLine(Utils.ToJson(cotizacion));
+                    Console.WriteLine(cotizacion.ToString());
             }
             catch (NullReferenceException e)
             {
@@ -373,8 +374,7 @@ namespace Core
             Console.WriteLine("Ingrese la descripcion de la cotizacion:");
             string descripcion = Console.ReadLine();
 
-            Console.WriteLine("Anada al Cliente:");
-            
+            //Obtener un nuevo cliente y anadirlo a la cotizacion.
             Cliente cliente = FormularioNuevoCliente(sistema);
             while (cliente == null)
             {
@@ -394,43 +394,71 @@ namespace Core
                 }
             }
 
-            List<Servicio> servicios = new List<Servicio>();
-
-            Console.WriteLine("Anada los servicios:");
-
+            //Crea la cotizacion con los datos obtenidos.
+            Cotizacion nuevaCotizacion = new Cotizacion()
+            {
+                Titulo = titulo,
+                Descripcion = descripcion,
+                Cliente = cliente
+            };
+            
+            //Obtener los servicios y anadirlos a la cotizacion.
             while (true)
             {
+                
+                //TODO: FIX ME.
+                
                 string input = "...";
-                Servicio servicio = FormularioNuevoServicio();
-                servicios.Add(servicio);
 
-                //Desplegar Servicio:
-                Console.WriteLine("Servicio: " + Utils.ToJson(servicio));
 
-                Console.WriteLine("Se ha anadido el servicio.");
-                Console.WriteLine("[1] Anadir nuevo servicio");
-                Console.WriteLine("[Otro] Terminar de anadir servicios");
+                Servicio nuevoServicio = FormularioNuevoServicio();
 
-                input = Console.ReadLine();
-
-                if (input != null && input.Equals("1"))
+                //Intentar anadir el servicio a la cotizacion.
+                try
                 {
-                    continue;
-                }
+                    sistema.Anadir(nuevoServicio, nuevaCotizacion);
+                    
+                    Console.WriteLine("Servicio anadido:");
+                    Console.WriteLine(nuevoServicio.ToString());
+                    
+                    Console.WriteLine("[1] Anadir nuevo servicio");
+                    Console.WriteLine("[Otro] Terminar de anadir servicios");
 
-                break;
+                    input = Console.ReadLine();
+
+                    if (input != null && input.Equals("1"))
+                    {
+                        //Repite el ciclo.
+                        continue;
+                    }
+                    //Sale del while.
+                    break;
+                }
+                catch (ModelException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Hubo un error al ingresar el servicio...");
+                    Console.WriteLine("[1] Intentar otra vez");
+                    Console.WriteLine("[2] Cancelar cotizacion");
+
+                    input = Console.ReadLine();
+
+                    switch (input)
+                    {
+                        case "1":
+                            continue;    //Repite el ciclo.
+                        case "2":
+                            return;    //Volver al menu anterior.
+                    }
+                }
             }
+            
+            
             
             //Crear cotizacion:
             try
             {
-                sistema.Anadir(new Cotizacion()
-                {
-                    Titulo = titulo,
-                    Descripcion = descripcion,
-                    Cliente = cliente,
-                    Servicios = servicios
-                }); //Almacena la cotizacion creada en el formulario.
+                sistema.Anadir(nuevaCotizacion); //Almacena la cotizacion creada en el formulario.
                 Console.WriteLine("Se ha anadido una nueva cotizacion.");
             }
             catch (ModelException e)
@@ -441,7 +469,7 @@ namespace Core
 
         public static Servicio FormularioNuevoServicio()
         {
-            Console.WriteLine(">Anadir Servicio");
+            Console.WriteLine("\n>Anadir Servicio");
 
             Console.WriteLine("Ingrese una descripcion para el servicio:");
             string descripcion = Console.ReadLine();
@@ -470,7 +498,7 @@ namespace Core
 
             TipoCliente tipoCliente = TipoCliente.Otro;
 
-            Console.WriteLine(">Anadir Cliente");
+            Console.WriteLine("\n>Anadir Cliente");
 
             Console.WriteLine("Ingrese el rut del cliente:");
             string rut = Console.ReadLine();
@@ -484,7 +512,7 @@ namespace Core
             }
             catch (ModelException)
             {
-                //No se encontro un cliente. Seguir.
+                //No se encontro un cliente; Seguir.
             }
 
             Console.WriteLine("Ingrese el nombre del cliente:");
