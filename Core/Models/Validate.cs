@@ -56,27 +56,6 @@ namespace Core.Models
 
         }
 
-
-
-        /// <summary>
-        /// Metodo que valida un email
-        /// </summary>
-        /// <param name="email"></param>
-        public static void ValidarEmail(string email)
-        {
-            try
-            {
-
-                MailAddress validate = new MailAddress(email);
-
-            }
-            catch (FormatException)
-            {
-                throw new ModelException("El email tiene un formato invalido");
-            }
-
-        }
-
         /// <summary>
         /// Metodo que compara dos cotizaciones y ve si algunos
         /// atributos especificos son iguales.

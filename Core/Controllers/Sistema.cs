@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using Core.DAO;
 using Core.Models;
@@ -419,6 +421,22 @@ namespace Core.Controllers
         IList<Cliente> ISistema.GetClientes()
         {
             throw new NotImplementedException();
+        }
+
+        public void EnviarEmail(string email, MailMessage mensaje)
+        {
+            SmtpClient client = new SmtpClient("smtp.live.com", 587)
+            {
+                Credentials = new NetworkCredential("upaucnproyecto@outlook.com", "upa123123"),
+                EnableSsl = true
+            };
+
+            mensaje.From = new MailAddress("upaucnproyecto@outlook.com");
+            mensaje.To.Add(email);
+            //mensaje.IsBodyHtml = false;
+            //mensaje.Body = "body";
+
+            client.Send(mensaje); 
         }
         
     }

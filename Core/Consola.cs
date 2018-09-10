@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
+using System.Reflection.Metadata.Ecma335;
 using Core.Controllers;
 using Core.Models;
+using SQLitePCL;
 
 namespace Core
 {
@@ -9,6 +12,7 @@ namespace Core
     {
         public static void MenuDirector(ISistema sistema, Usuario usuario)
         {
+             
             string input = "...";
             while (input != null && !input.Equals("0"))
             {
@@ -49,6 +53,7 @@ namespace Core
                 Console.WriteLine("[4] Cambiar Estado de Cotizacion");
                 Console.WriteLine("[5] Buscar Cotizacion");
                 Console.WriteLine("[6] Ver cotizaciones");
+                Console.WriteLine("[7] Enviar Cotizacion");
                 //TODO: Enviar cotizacion (German)
                 
                 Console.WriteLine("[0] Salir");
@@ -86,6 +91,11 @@ namespace Core
                     case "6":
                     {
                         MostrarCotizacionesParaDirector(sistema);
+                        break;
+                    }
+                    case "7":
+                    {
+                        GenerarEmail(sistema);
                         break;
                     }
                     case "0":
@@ -531,6 +541,73 @@ namespace Core
             
             return null;
         }
+
+
+        public static void GenerarEmail(ISistema sistema)
+        {
+            
+            
+            Console.WriteLine("Seleccione la cotizacion a enviar: ");
+            Cotizacion CotizacionEmail;  
+           
+            foreach( Cotizacion c in sistema.GetCotizaciones())
+            {
+                Console.WriteLine(c.Titulo);
+                Console.WriteLine(c.Identificador);
+            }
+           
+            Console.WriteLine("Ingresa la id :");
+            string idCotizacion = Console.ReadLine();
+
+            try
+            {
+                CotizacionEmail = sistema.BuscarCotizacion(idCotizacion);
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine("No existe cotizacion que tenga esa id");
+                return;
+            }
+
+            MailMessage email = new MailMessage()
+            {
+                Subject = "Cotizacion "+CotizacionEmail.Titulo,
+                IsBodyHtml = true,
+                Body = @"<html>
+                        <body>
+                        <h1>"+CotizacionEmail.Titulo+@"</h1>
+                        <h2>Datos</h2>
+                        <p>Numero: "+CotizacionEmail.Numero+@"</p>
+                        <p>Version: "+CotizacionEmail.Version+@"</p>
+                        <p>Descripcion: "+CotizacionEmail.Descripcion+@"</p>
+                        <p>Costo Total: "+CotizacionEmail.CostoTotal+@"</p>
+                        <p>Estado : "+CotizacionEmail.Estado.ToString()+@"</p>
+                        <h1>Servicios</h1>
+                        <p>"+CotizacionEmail.Servicios.ToString()+@"</p>
+                        </body>
+                        </html>
+                        "
+            };
+            
+            
+            sistema.EnviarEmail(CotizacionEmail.Cliente.Persona.Email,email);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+        
+
 
         public static void MenuProductor(ISistema sistema, Usuario usuario)
         {

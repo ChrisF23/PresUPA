@@ -43,21 +43,6 @@ namespace TestCore.Models
             Assert.Throws<ModelException>(() => Validate.ValidarRut(rut));
         }
         
-        /// <summary>
-        /// Validacion formato del rut
-        /// </summary>
-        /// <param name="email"></param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("g.@online1.ucn.cl")]
-        [InlineData("grojo@online.ucn.1")]
-        [InlineData(" g***@online.ucn.cl")]
-        [InlineData("  ")]
-        [InlineData("EMAILSUPERMEGAVALIDO")]
-        [InlineData("durrutia@ucn.online..cl")]
-        public void ValidarEmail(string email)
-        {
-            Validate.ValidarEmail(email);
-        }
+        
     }
 }

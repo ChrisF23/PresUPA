@@ -75,4 +75,5 @@ namespace Core.Models
         PreProduccion,
         Pausa
     }
+  
 }

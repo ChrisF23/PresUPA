@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mail;
 using Core.Models;
 
 namespace Core.Controllers
@@ -128,6 +129,8 @@ namespace Core.Controllers
         Cliente BuscarCliente(string rut);
 
         void Desplegar(string rut);
+
+        void EnviarEmail(string email,MailMessage mensaje);
         
         IList<Cliente> GetClientes();
     }

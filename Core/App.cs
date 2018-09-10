@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using Core.Controllers;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
@@ -29,6 +30,9 @@ namespace Core
         /// <exception cref="ModelException"></exception>
         private static void Main(string[] args)
         {
+            
+           
+            
             Console.WriteLine("Iniciando la aplicacion...");
             ISistema sistema = Startup.BuildSistema();
             
@@ -48,7 +52,8 @@ namespace Core
                 Password = "1234",
                 Tipo = TipoUsuario.Director
             };
-            
+
+           
             try
             {
                 sistema.Anadir(usuarioDirector);

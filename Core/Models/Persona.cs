@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
 
 namespace Core.Models
 {
@@ -64,8 +65,8 @@ namespace Core.Models
             {
                 throw new ModelException("Email no puede ser null o vacio.");
             }
-            
-            Models.Validate.ValidarEmail(Email);
+    
+            MailAddress mail  = new MailAddress(Email);
         }
     }
 }
