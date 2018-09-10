@@ -20,20 +20,21 @@ namespace Core
                 Console.WriteLine("[1] Administrar Cotizaciones");
                 Console.WriteLine("[2] Administrar Clientes");
                 Console.WriteLine("[3] Administrar Usuarios");
-                Console.WriteLine("[0] Salir");
+                Console.WriteLine("[0] Cerrar Sesion");
 
                 input = Console.ReadLine();
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         MenuAdministrarCotizaciones(sistema, usuario);
                         break;
                     case "2":
                         break;
                     case "3":
+                        break;
+                    case "0":
+                        Console.WriteLine("\nCerrando Sesion...");
                         break;
                     default:
                         continue;
@@ -56,14 +57,12 @@ namespace Core
                 Console.WriteLine("[7] Enviar Cotizacion");
                 //TODO: Enviar cotizacion (German)
                 
-                Console.WriteLine("[0] Salir");
+                Console.WriteLine("[0] Volver al menu anterior");
 
                 input = Console.ReadLine();
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                     {
                         FormularioNuevaCotizacion(sistema);
@@ -112,21 +111,21 @@ namespace Core
         /// <param name="sistema"></param>
         public static void MostrarCotizacionesParaDirector(ISistema sistema)
         {
-            Console.WriteLine("Mostrando Cotizaciones...");
+            Console.WriteLine("Mostrando Cotizaciones...\n");
             try
             {
                 IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
-                foreach (Cotizacion cotizacion in cotizaciones) 
-                    Console.WriteLine(Utils.ToJson(cotizacion));
+                foreach (Cotizacion cotizacion in cotizaciones)
+                {
+                    Console.WriteLine("\n--------------------------");
+                    Console.WriteLine(cotizacion.ToString());
+                }
+                Console.WriteLine("--------------------------\n");
             }
             catch (NullReferenceException e)
             {
                 Console.WriteLine(e.Message);
             }
-            
-            
-
-            
         }
         
         /// <summary>
@@ -209,12 +208,10 @@ namespace Core
                 
                 string input = Console.ReadLine();
 
-                EstadoCotizacion estadoNuevo;    //Inicia en borrador por defecto.
+                EstadoCotizacion estadoNuevo = EstadoCotizacion.Borrador;    //Inicia en borrador por defecto.
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         estadoNuevo = EstadoCotizacion.Borrador;
                         break;
@@ -226,6 +223,8 @@ namespace Core
                         break;
                     case "4":
                         estadoNuevo = EstadoCotizacion.Terminada;
+                        break;
+                    case "0":
                         break;
                     default:
                         continue;
@@ -295,11 +294,12 @@ namespace Core
             {
                 Console.WriteLine("\n>Edicion de Cotizacion");
                 
-                Console.WriteLine(Utils.ToJson(copy));
-
+                //Console.WriteLine(Utils.ToJson(copy));
+                Console.WriteLine(copy.ToString());
+                
                 Console.WriteLine("[1] Editar titulo");
                 Console.WriteLine("[2] Editar descripcion");
-                Console.WriteLine("[3] Editar servicios");
+                Console.WriteLine("[3] Cambiar cliente");
                 Console.WriteLine("[4] Editar servicios");
                 Console.WriteLine("[5] Guardar cambios y volver");
                 Console.WriteLine("[0] Cancelar cambios y volver");
@@ -308,8 +308,6 @@ namespace Core
                
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                     {
                         Console.WriteLine("Ingrese el nuevo titulo:");
@@ -324,8 +322,30 @@ namespace Core
                     }
                     case "3":
                     {
-                        Console.WriteLine("Ingrese los datos del cliente::");
-                        copy.Cliente = FormularioNuevoCliente(sistema);
+                        Console.WriteLine("Ingrese los datos del nuevo cliente:");
+                        Cliente nuevoCliente = FormularioNuevoCliente(sistema);
+                        
+                        while (nuevoCliente == null)
+                        {
+                            Console.WriteLine("Hubo un error al ingresar los datos del nuevo cliente...");
+                            Console.WriteLine("[1] Intentar otra vez");
+                            Console.WriteLine("[Otro] Mantener cliente anterior");
+
+                            input = Console.ReadLine();
+
+                            if (input == "1")
+                                nuevoCliente = FormularioNuevoCliente(sistema);
+                            else
+                                break;
+                        }
+
+                        if (nuevoCliente != null)
+                        {
+                            copy.Cliente = nuevoCliente;
+                            Console.WriteLine("Cliente actualizado.");
+                        }
+                        else
+                            Console.WriteLine("Se ha cancelado el cambio de cliente.");
                         break;
                     }
                     case "4":
@@ -383,14 +403,13 @@ namespace Core
             Console.WriteLine("Ingrese la descripcion de la cotizacion:");
             string descripcion = Console.ReadLine();
 
-            Console.WriteLine("Anada al Cliente:");
-            
+            //Obtener un nuevo cliente y anadirlo a la cotizacion.
             Cliente cliente = FormularioNuevoCliente(sistema);
             while (cliente == null)
             {
                 Console.WriteLine("Hubo un error al ingresar el Cliente...");
                 Console.WriteLine("[1] Intentar otra vez");
-                Console.WriteLine("[2] Cancelar cotizacion");
+                Console.WriteLine("[Otro] Cancelar cotizacion");
 
                 string input = Console.ReadLine();
 
@@ -399,48 +418,74 @@ namespace Core
                     case "1":
                         cliente = FormularioNuevoCliente(sistema);
                         break;
-                    case "2":
+                    default:
                         return;    //Volver al menu anterior.
                 }
             }
 
-            List<Servicio> servicios = new List<Servicio>();
-
-            Console.WriteLine("Anada los servicios:");
-
+            //Crea la cotizacion con los datos obtenidos.
+            Cotizacion nuevaCotizacion = new Cotizacion()
+            {
+                Titulo = titulo,
+                Descripcion = descripcion,
+                Cliente = cliente
+            };
+            
+            Console.WriteLine(">>Anadir Servicios");
+            
+            //Obtener los servicios y anadirlos a la cotizacion.
             while (true)
             {
                 string input = "...";
-                Servicio servicio = FormularioNuevoServicio();
-                servicios.Add(servicio);
 
-                //Desplegar Servicio:
-                Console.WriteLine("Servicio: " + Utils.ToJson(servicio));
+                Servicio nuevoServicio = FormularioNuevoServicio();
 
-                Console.WriteLine("Se ha anadido el servicio.");
-                Console.WriteLine("[1] Anadir nuevo servicio");
-                Console.WriteLine("[Otro] Terminar de anadir servicios");
-
-                input = Console.ReadLine();
-
-                if (input != null && input.Equals("1"))
+                //Intentar anadir el servicio a la cotizacion.
+                try
                 {
-                    continue;
-                }
+                    sistema.Anadir(nuevoServicio, nuevaCotizacion);
+                    
+                    Console.WriteLine("Servicio anadido:\n");
+                    Console.WriteLine(nuevoServicio.ToString());
+                    
+                    Console.WriteLine("\n[1] Anadir nuevo servicio");
+                    Console.WriteLine("[Otro] Terminar de anadir servicios");
 
-                break;
+                    input = Console.ReadLine();
+
+                    if (input != null && input.Equals("1"))
+                    {
+                        //Repite el ciclo.
+                        continue;
+                    }
+                    //Sale del while.
+                    break;
+                }
+                catch (ModelException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Hubo un error al ingresar el servicio...");
+                    Console.WriteLine("[1] Intentar otra vez");
+                    Console.WriteLine("[Otro] Cancelar cotizacion");
+
+                    input = Console.ReadLine();
+
+                    switch (input)
+                    {
+                        case "1":
+                            continue;    //Repite el ciclo.
+                        default:
+                            return;    //Volver al menu anterior.
+                    }
+                }
             }
+            
+            
             
             //Crear cotizacion:
             try
             {
-                sistema.Anadir(new Cotizacion()
-                {
-                    Titulo = titulo,
-                    Descripcion = descripcion,
-                    Cliente = cliente,
-                    Servicios = servicios
-                }); //Almacena la cotizacion creada en el formulario.
+                sistema.Anadir(nuevaCotizacion); //Almacena la cotizacion creada en el formulario.
                 Console.WriteLine("Se ha anadido una nueva cotizacion.");
             }
             catch (ModelException e)
@@ -451,7 +496,7 @@ namespace Core
 
         public static Servicio FormularioNuevoServicio()
         {
-            Console.WriteLine(">Anadir Servicio");
+            Console.WriteLine("\n>Anadir Servicio");
 
             Console.WriteLine("Ingrese una descripcion para el servicio:");
             string descripcion = Console.ReadLine();
@@ -480,7 +525,7 @@ namespace Core
 
             TipoCliente tipoCliente = TipoCliente.Otro;
 
-            Console.WriteLine(">Anadir Cliente");
+            Console.WriteLine("\n>Anadir Cliente");
 
             Console.WriteLine("Ingrese el rut del cliente:");
             string rut = Console.ReadLine();
@@ -494,7 +539,7 @@ namespace Core
             }
             catch (ModelException)
             {
-                //No se encontro un cliente. Seguir.
+                //No se encontro un cliente; Seguir.
             }
 
             Console.WriteLine("Ingrese el nombre del cliente:");
@@ -536,7 +581,7 @@ namespace Core
             }
             catch (ModelException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);    //Solo mostrara el primer error que ocurra.
             }
             
             return null;
@@ -622,8 +667,6 @@ namespace Core
                 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         break;
                     default:
@@ -647,8 +690,6 @@ namespace Core
 
                 switch (input)
                 {
-                    case null:
-                        continue;
                     case "1":
                         break;
                     default:

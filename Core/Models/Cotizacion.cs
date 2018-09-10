@@ -128,18 +128,42 @@ namespace Core.Models
             
             CalcularMiCostoTotal();
             
-            if (CostoTotal == 0)
+            if (CostoTotal <= 0)
             {
-                throw new ModelException("La cotizacion no puede tener un costo total de $0.");
+                throw new ModelException("La cotizacion debe tener un costo total superior a $0.");
             }
-
-            if (CostoTotal < 0)
-            {
-                throw new ModelException("La cotizacion no puede tener un costo negativo");
-            }
-            
             
         }
+
+        public override string ToString()
+        {
+            return
+                "Identificador: " + Identificador +
+                "\nTitulo: " + Titulo +
+                "\nDescripcion: " + Descripcion +
+                "\nFecha de Creacion: " + FechaCreacion +
+                "\n\n>Cliente: \n\n" + Cliente.ToString() +
+                "\n\n>Servicios: \n" + MisServiciosToString() +
+                "\nCosto Total: $" + CostoTotal +
+                "\nEstado: " + Estado;
+        }
+
+        public string MisServiciosToString()
+        {
+            string ts = "";
+            if (Servicios != null)
+            {
+                int counter = 0;
+                foreach (Servicio servicio in Servicios)
+                {
+                    ts = String.Concat(ts, "\n>>Servicio ", ++counter, ":\n");
+                    ts = String.Concat(ts, servicio.ToString(), "\n");
+                }
+            }
+
+            return ts;
+        }
+
     }
     /// <summary>
     /// Enumeracion con los distintos estados de la cotizacion

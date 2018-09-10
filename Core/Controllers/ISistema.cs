@@ -98,9 +98,7 @@ namespace Core.Controllers
         //    Operaciones de Sistema: Servicio (OS_SEXXX)
         //------------------------------------------------------------------------------
 
-        void Anadir(Servicio servicio, string idCotizacion);
-
-        void Anadir(List<Servicio> servicios, string idCotizacion);
+        void Anadir(Servicio servicio, Cotizacion cotizacion);
    
         void EditarServicio(Servicio servicio);
     

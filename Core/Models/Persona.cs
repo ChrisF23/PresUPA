@@ -68,5 +68,13 @@ namespace Core.Models
     
             MailAddress mail  = new MailAddress(Email);
         }
+
+        public override string ToString()
+        {
+            return
+                "Rut: " + Rut +
+                "\nNombre: " + String.Concat(Nombre, " ", Paterno, " ", Materno) +
+                "\nEmail: " + Email;
+        }
     }
 }

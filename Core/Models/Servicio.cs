@@ -60,6 +60,15 @@ namespace Core.Models
             }
 
         }
+
+        public override string ToString()
+        {
+            return
+                "Descripcion: " + Descripcion + "\n"
+                + "Cantidad: " + Cantidad + "\n"
+                + "Costo unidad: $" + CostoUnidad + "\n"
+                + "Sub total: $" + (CostoUnidad*Cantidad);
+        }
     }
     
     /// <summary>
@@ -67,13 +76,13 @@ namespace Core.Models
     /// </summary>
     public enum EstadoServicio
     {
-        Cancelado,
-        Entregado,
-        Revision,
-        PostProduccion,
-        Rodaje,
+        SinIniciar,
         PreProduccion,
-        Pausa
+        Rodaje,
+        PostProduccion,
+        Revision,
+        Entregado,
+        Cancelado
     }
   
 }

@@ -121,6 +121,9 @@ namespace Core.Controllers
             if (idCotizacion == null)
                 throw new ModelException("El identificador ingresado fue nulo.");
             
+            if (string.IsNullOrEmpty(idCotizacion))
+                throw new ModelException("El identificador ingresado esta vacio.");
+            
             //Buscar y borrar.
             _repositoryCotizacion.Remove(BuscarCotizacion(idCotizacion));
         }
@@ -130,7 +133,7 @@ namespace Core.Controllers
         public void Editar(Cotizacion cotizacion)
         {
             //Se recibe por parametro la cotizacion ya editada.
-            //Si la cotizacion recibida es distinta a la obtenida por su id,
+            //Si la cotizacion recibida es distinta a la obtenida por su identificador,
             //Se procede a agregar la nueva version en la base de datos.
 
             Cotizacion comparar = BuscarCotizacion(cotizacion.Identificador);
@@ -271,7 +274,7 @@ namespace Core.Controllers
             Usuario usuario = usuarios.Single();
             if (!BCrypt.Net.BCrypt.Verify(password, usuario.Password))
             {
-                throw new ModelException("Password no coincide");
+                throw new ModelException("Contrasena incorrecta!");
             }
 
             return usuario;
@@ -311,15 +314,22 @@ namespace Core.Controllers
         //------------------------------------------------------------------------------
 
         /// <inheritdoc />
-        public void Anadir(Servicio servicio, string idCotizacion)
+        public void Anadir(Servicio servicio, Cotizacion cotizacion)
         {
-            throw new NotImplementedException();
-        }
-        
-        /// <inheritdoc />
-        public void Anadir(List<Servicio> servicios, string idCotizacion)
-        {
-            throw new NotImplementedException();
+            if (servicio == null)
+                throw new ModelException("El servicio ingresado fue nulo.");
+            if (cotizacion == null)
+                throw new ModelException("La cotizacion ingresada fue nula.");
+            
+            //Valido el servicio antes de anadirlo a la cotizacion:
+            servicio.Validate();
+            
+            //Si la lista de servicios de la cotizacion es nula, inicializarla:
+            if (cotizacion.Servicios == null)
+                cotizacion.Servicios = new List<Servicio>();
+            
+            //Anadir servicio.
+            cotizacion.Servicios.Add(servicio);
         }
         
         /// <inheritdoc />

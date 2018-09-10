@@ -30,6 +30,13 @@ namespace Core.Models
                 throw new ModelException("Se requiere la Persona");
             }
         }
+
+        public override string ToString()
+        {
+            return Persona.ToString() +
+                   "\nTipo: " + Tipo;
+        }
+
     }
 
     public enum TipoCliente
