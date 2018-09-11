@@ -106,7 +106,7 @@ namespace TestCore.Models
             // Costo Total es 0
             {
                 var costoTotalThrow = Assert.Throws<ModelException>(() => cotizacion.Validate());
-                Assert.Equal("La cotizacion no puede tener un costo total de $0.", costoTotalThrow.Message);
+                Assert.Equal("La cotizacion debe tener un costo total superior a $0.", costoTotalThrow.Message);
                 _output.WriteLine("CostoTotal es 0 --> Success");
             }
             cotizacion.CostoTotal = -20000;
@@ -115,7 +115,7 @@ namespace TestCore.Models
             // Costo Total es negativo
             {
                 var costoTotalThrow = Assert.Throws<ModelException>(() => cotizacion.Validate());
-                Assert.Equal("La cotizacion no puede tener un costo negativo", costoTotalThrow.Message);
+                Assert.Equal("La cotizacion debe tener un costo total superior a $0.", costoTotalThrow.Message);
                 _output.WriteLine("CostoTotal es negativo --> Success");
             }
             cotizacion.CostoTotal = 20000;

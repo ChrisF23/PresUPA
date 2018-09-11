@@ -48,7 +48,7 @@ namespace TestCore.Models
             //Password es null
             {
                 var personaThrow = Assert.Throws<ModelException>(() => usuario.Validate());
-                Assert.Equal("Se requiere la Persona", personaThrow.Message);
+                Assert.Equal("Se requiere el Password", personaThrow.Message);
                 _output.WriteLine("Persona es null --> Success");
             }
             usuario.Password=BCrypt.Net.BCrypt.HashPassword("passwordTest");

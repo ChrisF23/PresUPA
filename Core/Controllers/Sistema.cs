@@ -285,6 +285,16 @@ namespace Core.Controllers
         /// <inheritdoc />
         public void Anadir(Persona persona, string password)
         {
+            if (persona == null)
+            {
+                throw new ArgumentNullException("La persona no debe ser null");
+            }
+
+            if (String.IsNullOrEmpty(password))
+            {
+                throw new ArgumentNullException("La password no puede ser null");
+            }
+
             // Guardo o actualizo en el backend.
             Anadir(persona);
 
@@ -333,6 +343,11 @@ namespace Core.Controllers
 
         public Usuario Login(string rutEmail, string password)
         {
+
+            if (String.IsNullOrEmpty(password))
+            {
+                throw new ModelException("Password no puede ser null");
+            }
 
             Persona persona = BuscarPersona(rutEmail);
             if (persona == null)

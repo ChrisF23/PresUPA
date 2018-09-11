@@ -44,25 +44,23 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Persona) null));
             }
 
+            Persona p = new Persona()
+            {
+                Rut = "194460880",
+                Email = "garojar@hotmail.com",
+                Nombre = "German",
+                Paterno = "Rojo",
+                Materno = "Arce"
+            };
+            
             Cliente cliente = new Cliente()
             {
-                Persona = new Persona()
-                {
-                    Rut = "194460880",
-                    Email = "garojar@hotmail.com",
-                    Nombre = "German",
-                    Paterno = "Rojo",
-                    Materno = "Arce"
-                },
+                Persona = p,
                 Tipo = TipoCliente.UnidadInterna
 
 
             };
-
-
-
-
-
+            
             //------------------------------------------------------------------------------
             //    Operaciones de Sistema: Cotizaciones (OS_COXXX)
             //------------------------------------------------------------------------------
@@ -127,6 +125,68 @@ namespace TestCore.Controllers
                 _output.WriteLine("id no existe en el repositorio cotizacion --> Success");
 
             }
+            
+            //------------------------------------------------------------------------------
+            //    Operaciones de Sistema: Usuario (OS_USXXX)
+            //------------------------------------------------------------------------------
+            
+            // Añadir Usuario
+            {
+                var usuarioAnadir = 
+                Assert.Throws<ArgumentNullException>(() => _sistema.Anadir((Persona) null, (string) null));
+                Assert.Equal("La persona no debe ser null", usuarioAnadir.Message);
+                _output.WriteLine("Persona del usuario es null --> Success");
+                
+                usuarioAnadir =
+                Assert.Throws<ArgumentNullException>(() => _sistema.Anadir(p, (string) null));
+                Assert.Equal("La password no debe ser null", usuarioAnadir.Message);
+                _output.WriteLine("Password del usuario es null --> Success");
+                
+                
+            }
+            
+            
+            //Login Usuario
+            {
+                
+                var loginUsuario =
+                    Assert.Throws<ModelException>(() => _sistema.Login(null,null));
+                Assert.Equal("Password no puede ser null", loginUsuario.Message);
+                _output.WriteLine("Password es nulo en login --> Success");
+                
+                loginUsuario =
+                Assert.Throws<ModelException>(() => _sistema.Login("100875713","pw123"));
+                Assert.Equal("Usuario no encontrado", loginUsuario.Message);
+                _output.WriteLine("Usuario no encontrado login --> Success");
+                
+            }
+
+
+            //Anadir Usuario
+            {
+                var usuarioAnadir =
+                Assert.Throws<ModelException>(() => _sistema.Anadir((Persona)null));
+                Assert.Equal("Persona es null", usuarioAnadir.Message);
+                _output.WriteLine("Persona es null en anadir usuario --> Success");
+ 
+            }
+            
+            //Buscar Usuario
+            {
+                var usuarioBuscar =
+                Assert.Throws<ModelException>(() => _sistema.BuscarPersona((string)null));
+                Assert.Equal("El rut o email ingresado fue nulo.", usuarioBuscar.Message);
+                _output.WriteLine("Rut ingresado para buscar usuario es null --> Success");
+ 
+            }
+            
+            
+            //------------------------------------------------------------------------------
+            //    Operaciones de Sistema: Servicio (OS_SEXXX)
+            //------------------------------------------------------------------------------
+            
+          
+            
             
         }
 
