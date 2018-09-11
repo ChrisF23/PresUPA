@@ -369,14 +369,9 @@ namespace Core.Controllers
         /// <inheritdoc />
         public void Anadir(Persona persona, string password)
         {
-            if (persona == null)
+            if (password == null)
             {
-                throw new ArgumentNullException("La persona no debe ser null");
-            }
-
-            if (String.IsNullOrEmpty(password))
-            {
-                throw new ArgumentNullException("La password no puede ser null");
+                throw new ModelException("La password no puede ser null.");
             }
 
             // Guardo o actualizo en el backend.

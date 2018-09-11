@@ -31,7 +31,7 @@ namespace Core
                 {
                     Rut = "194460880",
                     Nombre = "German",
-                    Paterno = "Rojas",
+                    Paterno = "Rojo",
                     Materno = "Arce",
                     Email = "garojar97@gmail.com"
                 },
