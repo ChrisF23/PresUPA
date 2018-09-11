@@ -255,7 +255,7 @@ namespace Core
             }
         }
 
-
+        
         public static void FormularioEditarCotizacion(ISistema sistema)
         {
             
@@ -291,11 +291,10 @@ namespace Core
             bool exit = false;
             while (true)
             {
-                Console.WriteLine("\n>Edicion de Cotizacion");
-                
-                //Console.WriteLine(Utils.ToJson(copy));
+               
                 Console.WriteLine(copy.ToString());
                 
+                Console.WriteLine("\n>Edicion de Cotizacion");
                 Console.WriteLine("[1] Editar titulo");
                 Console.WriteLine("[2] Editar descripcion");
                 Console.WriteLine("[3] Cambiar cliente");
@@ -350,15 +349,60 @@ namespace Core
                     case "4":
                     {
                         Console.WriteLine("Cantidad de Servicios: " + copy.Servicios.Count);
-                        int cntr = 0;
+                        int index = 0;
                         foreach (Servicio s in copy.Servicios)
                         {
-                            Console.WriteLine("Indice: " + (cntr++));
-                            Console.WriteLine(Utils.ToJson(s));
+                            Console.WriteLine("\n------------------");
+                            Console.WriteLine("Indice: " + (++index));
+                            Console.WriteLine(s.ToString());
+                        }
+                        Console.WriteLine("------------------\n");
+
+                        //TODO: Terminar esto!
+                        while (true)
+                        {
+                            Console.WriteLine(">Ingrese el indice del servicio que desea editar");
+                            Console.WriteLine("[Otro] Cancelar");
+                            int editIndex = 0;
+                            try
+                            {
+                                editIndex = int.Parse(Console.ReadLine());
+                                
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                continue;
+                            }
+
+                            if (editIndex >= 1 && editIndex <= copy.Servicios.Count)
+                            {
+                                Console.WriteLine(">Editar Servicio");
+                                Console.WriteLine("[1] Cambiar Servicio");
+                                Console.WriteLine("[2] Borrar Servicio");
+                                Console.WriteLine("[Otro] Cancelar");
+
+                                input = Console.ReadLine();
+
+                                switch (input)
+                                {
+                                    case "1":
+                                        copy.Servicios[editIndex - 1] = FormularioNuevoServicio();
+                                        Console.WriteLine("Servicio cambiado.");
+                                        break;
+                                    case "2":
+                                        copy.Servicios.RemoveAt(editIndex - 1);
+                                        Console.WriteLine("Servicio borrado.");
+                                        break;
+                                    default:
+                                        continue;
+                                }
+                            }
+                            
+                            break;
                         }
 
-                        Console.WriteLine("Ingrese el indice del servicio que desea editar");
-                        //TODO: Terminar esto!
+
                         break;
                     }
                     case "5":
@@ -387,6 +431,10 @@ namespace Core
 
                 if (exit)
                     break;
+                
+                
+                //Recalcular costo total de la copia:
+                copy.CalcularMiCostoTotal();
             }
             
         }

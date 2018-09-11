@@ -146,12 +146,11 @@ namespace Core.Controllers
             
             if (Validate.CompararCotizaciones(cotizacion, comparar))
             {
-                Console.WriteLine("No hay cambios");
-                return;
+                //No hay cambios.
+                throw new ModelException("No se detectaron cambios.");
             }
             
-            Console.WriteLine("Cambios detectados");
-
+            //Cambios detectados. Guardar.
             Anadir(cotizacion);
         }
 
