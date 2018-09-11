@@ -652,7 +652,6 @@ namespace Core
             return null;
         }
 
-
         public static void FormularioEnviarCotizacion(ISistema sistema, Usuario usuario)
         {
             
@@ -726,7 +725,7 @@ namespace Core
             
             //Ingresar contrasena del Email del remitente:
 
-            Console.WriteLine("\n>Ingrese la contrasena del Email:");
+            Console.WriteLine("\n>Ingrese la contrasena del Email para enviar:");
             Console.WriteLine("Email: " + remitente);
             Console.Write("Contrasena: ");
 
@@ -747,6 +746,12 @@ namespace Core
                     <p>Costo Unidad: $" + servicio.CostoUnidad + @"</p>
                     <p><b>Sub total: $" + (servicio.Cantidad * servicio.CostoUnidad) + @"<b></p><br>";
             }
+
+            string plantillaFondo =
+                "Nos encontramos a su disposición para consultas y comentarios. Atentamente suyo,";
+
+            string nombreDirector =
+                usuario.Persona.Nombre + " " + usuario.Persona.Paterno + " " + usuario.Persona.Materno;
             
             //Creacion del Email:
             MailMessage mailMessage = new MailMessage()
@@ -760,7 +765,11 @@ namespace Core
                         <h1>Titulo: " + cotizacionEnviar.Titulo + @"</h1>
                         <h2>Descripcion: " + cotizacionEnviar.Descripcion + @"</h2>
                         <h2>Servicios:</h2>" + servicios +
-                       "<br><p><b>Costo Total: $" + cotizacionEnviar.CostoTotal + @"</b></p>
+                       "<p><b>Costo Total: $" + cotizacionEnviar.CostoTotal + @"</b></p>
+                        <br><p>" + plantillaFondo + @"</p>
+                        <p><b>"+ nombreDirector+@"</b></p>
+                        <p>Director de proyectos <b>UPA Periodismo UCN</b></p>
+                        <p>"+remitente+@"</p>
                         </body>
                         </html>
                         "
@@ -770,7 +779,7 @@ namespace Core
             
             try
             {
-                sistema.EnviarEmail(remitente, emailPassword, destinatario, mailMessage);
+                sistema.EnviarEmail(cotizacionEnviar, remitente, emailPassword, destinatario, mailMessage);
                 Console.WriteLine("Se ha enviado la cotizacion!");
             }
             catch (Exception e)

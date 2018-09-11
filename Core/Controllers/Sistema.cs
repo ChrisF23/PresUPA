@@ -441,7 +441,8 @@ namespace Core.Controllers
             throw new NotImplementedException();
         }
 
-        public void EnviarEmail(string remitente, string emailPassword, string destinatario, MailMessage mailMessage)
+        public void EnviarEmail(Cotizacion cotizacionEnviar, string remitente, string emailPassword,
+            string destinatario, MailMessage mailMessage)
         {
             if (String.IsNullOrEmpty(emailPassword))
             {
@@ -452,29 +453,27 @@ namespace Core.Controllers
             {
                 throw new ModelException("El Email del remitente esta vacio.");
             }
-            
+
             if (String.IsNullOrEmpty(destinatario))
             {
                 throw new ModelException("El Email del destinatario esta vacio.");
             }
-            
+
             if (mailMessage == null)
             {
                 throw new ModelException("El Email fue nulo.");
             }
-            
-            //"smtp.live.com", 587
-            
+
             //Es necesario especificar el servidor!
 
             string servidor = null;
-            
+
             //Si el remitente pertenece a los dominios de ucn.cl, usar servidor gmail.
             if (remitente.EndsWith("ucn.cl"))
             {
                 servidor = "smtp.gmail.com";
             }
-            
+
             //Si no, buscar en los servidores guardados.
             else
             {
@@ -487,8 +486,8 @@ namespace Core.Controllers
                     }
                 }
             }
-            
 
+            //Si no se pudo encontrar un servidor, lanzar excepcion.
             if (servidor == null)
                 throw new SmtpException("El sistema no conoce el servidor remitente.");
 
@@ -502,9 +501,12 @@ namespace Core.Controllers
             mailMessage.To.Add(destinatario);
             //mensaje.    IsBodyHtml = false;
             //mensaje.Body = "body";
+
+            client.Send(mailMessage);
             
-            client.Send(mailMessage); 
+            //Si no lanzo excepcion al enviar el mensaje, cambiar el estado de la cotizacion a Enviada.
+            cotizacionEnviar.Estado = EstadoCotizacion.Enviada;
         }
-        
+
     }
 }

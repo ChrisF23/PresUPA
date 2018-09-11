@@ -132,7 +132,7 @@ namespace Core.Controllers
 
         void Desplegar(string rut);
 
-        void EnviarEmail(string remitente, string emailPassword, string destinatario, MailMessage mailMessage);
+        void EnviarEmail(Cotizacion cotizacionEnviar, string remitente, string emailPassword, string destinatario, MailMessage mailMessage);
         
         IList<Cliente> GetClientes();
     }

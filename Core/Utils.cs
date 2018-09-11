@@ -9,15 +9,13 @@ namespace Core
     /// </summary>
     public sealed class Utils
     {
-        public static readonly string SmtpServerGmail = "gmail";
-        public static readonly string SmtpServerOutlook = "live";
-        public static readonly string SmtpServerOffice365 = "office365";
         
         public static readonly string[] SmtpServers = new string[]
         {
-            SmtpServerGmail,
-            SmtpServerOutlook,
-            SmtpServerOffice365
+            "gmail",
+            "live",
+            "office365",
+            "outlook"
         };
 
         public static string ToFormatedDate(DateTime dt)
