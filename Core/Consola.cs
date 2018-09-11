@@ -490,6 +490,7 @@ namespace Core
             catch (ModelException e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine("Cancelando cotizacion...");
             }
         }
 
@@ -501,10 +502,27 @@ namespace Core
             string descripcion = Console.ReadLine();
             
             Console.WriteLine("Ingrese el costo de este servicio:");
-            int costoUnidad = int.Parse(Console.ReadLine());
-            
+            int costoUnidad;
+            try
+            {
+                costoUnidad = int.Parse(Console.ReadLine());
+
+            }
+            catch (Exception e)
+            {
+                costoUnidad = 0;
+            }
+
             Console.WriteLine("Ingrese la cantidad de este servicio:");
-            int cantidad = int.Parse(Console.ReadLine());
+            int cantidad;
+            try
+            {
+                cantidad = int.Parse(Console.ReadLine());
+            }
+            catch (Exception e)
+            {
+                cantidad = 0;
+            }
             
             return new Servicio()
             {
@@ -675,10 +693,11 @@ namespace Core
 
             foreach (Servicio servicio in cotizacionEnviar.Servicios)
             {
-                servicios += "<p><b>" + servicio.Descripcion + @"<b></p>
-                <p>Cantidad: " + servicio.Cantidad + @"</p>
-                <p>Costo Unidad: $" + servicio.CostoUnidad + @"</p>
-                <p><b>Sub total: $" + (servicio.Cantidad * servicio.CostoUnidad) + @"<b></p><br>";
+                servicios +=
+                    "<p><b>" + servicio.Descripcion + @"<b></p>
+                    <p>Cantidad: " + servicio.Cantidad + @"</p>
+                    <p>Costo Unidad: $" + servicio.CostoUnidad + @"</p>
+                    <p><b>Sub total: $" + (servicio.Cantidad * servicio.CostoUnidad) + @"<b></p><br>";
             }
             
             //Creacion del Email:
@@ -689,7 +708,7 @@ namespace Core
                 IsBodyHtml = true,
                 Body = @"<html>
                         <body>
-                        <p><b>Fecha: " + cotizacionEnviar.FechaCreacion.Date + @"</b></p>
+                        <p><b>Fecha: " + Utils.ToFormatedDate(cotizacionEnviar.FechaCreacion)+ @"</b></p>
                         <h1>Titulo: " + cotizacionEnviar.Titulo + @"</h1>
                         <h2>Descripcion: " + cotizacionEnviar.Descripcion + @"</h2>
                         <h2>Servicios:</h2>" + servicios +
@@ -699,6 +718,8 @@ namespace Core
                         "
             };
 
+            Console.WriteLine();
+            
             try
             {
                 sistema.EnviarEmail(remitente, emailPassword, destinatario, mailMessage);

@@ -286,6 +286,9 @@ namespace Core.Controllers
             return usuario;
         }
 
+
+        
+
         /// <inheritdoc />
         public void Anadir(Persona persona)
         {
@@ -294,7 +297,7 @@ namespace Core.Controllers
             {
                 throw new ModelException("Persona es null");
             }
-            
+
             // La validacion de los atributos ocurre en el repositorio.
             _repositoryPersona.Add(persona);
         }

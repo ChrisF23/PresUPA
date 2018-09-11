@@ -6,7 +6,6 @@ using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 //TODO: Implementar la busqueda de cotizaciones (Consola, Sistema).
-//TODO: Implementar el envio de cotizaciones por correo (Sistema).
 //TODO: Completar los demas menus para cada usuario y sus operaciones. --
 //TODO: -- El Menu Director (exceptuando la busqueda y el envio) se encuentra listo.
 //TODO: Documentar.
@@ -27,8 +26,6 @@ namespace Core
         /// <exception cref="ModelException"></exception>
         private static void Main(string[] args)
         {
-            
-           
             
             Console.WriteLine("Iniciando la aplicacion...");
             ISistema sistema = Startup.BuildSistema();
@@ -61,10 +58,12 @@ namespace Core
                 return;
             }
 
-            //Login:
-            while (true)
+            int counter = 3;
+            //Login: Si falla 3 veces en ingresar, el programa termina.
+            while (counter > 0)
             {
-                Console.WriteLine("\nIngrese su rut o email: ");
+                Console.WriteLine("\n(Intentos: {0})", counter);
+                Console.WriteLine("Ingrese su rut o email: ");
                 string rutEmail = Console.ReadLine();
                 Console.WriteLine("Ingrese su contrasena: ");
                 string password = Console.ReadLine();
@@ -78,8 +77,11 @@ namespace Core
                 catch (ModelException e)
                 {
                     Console.WriteLine(e.Message);
+                    counter--;
                     continue;    //Vuelve al while.
                 }
+
+                counter = 3;
                 
                 //Mostrar menu segun usuario:
                 Console.WriteLine("\n--------------------------");
@@ -101,6 +103,8 @@ namespace Core
                 }
                 
             }
+
+            Console.WriteLine("\nPrograma terminado.");
         }
 
         
