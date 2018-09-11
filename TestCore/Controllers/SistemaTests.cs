@@ -20,6 +20,11 @@ namespace TestCore.Controllers
         /// Logger de la clase
         /// </summary>
         private readonly ITestOutputHelper _output;
+        
+        /// <summary>
+        /// Cantidad de Test
+        /// </summary>
+        private int cantTest=0;
 
         /// <summary>
         /// Constructor
@@ -42,6 +47,7 @@ namespace TestCore.Controllers
             // Insert null
             {
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Persona) null));
+                cantTest+=1;
             }
 
             Persona p = new Persona()
@@ -75,6 +81,7 @@ namespace TestCore.Controllers
                 var cotizacionAnadir = Assert.Throws<ModelException>(() => _sistema.Anadir((Cotizacion) null));
                 Assert.Equal("La cotizacion es null", cotizacionAnadir.Message);
                 _output.WriteLine("Cotizacion añadida es null --> Success");
+                cantTest++;
             }
 
             /**
@@ -84,6 +91,7 @@ namespace TestCore.Controllers
                 var cotizacionBorrar = Assert.Throws<ModelException>(() => _sistema.Borrar(null));
                 Assert.Equal("El identificador ingresado fue nulo.", cotizacionBorrar.Message);
                 _output.WriteLine("id Cotizacion  es null --> Success");
+                cantTest++;
             }
 
 
@@ -94,6 +102,7 @@ namespace TestCore.Controllers
                 var cotizacionEditar = Assert.Throws<ModelException>(() => _sistema.Editar((Cotizacion) null));
                 Assert.Equal("La cotizacion es null.", cotizacionEditar.Message);
                 _output.WriteLine("Cotizacion a editar es null --> Success");
+                cantTest++;
             }
 
             List<Servicio> list = new List<Servicio>();
@@ -113,13 +122,14 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.BuscarCotizacion((string) null));
                 Assert.Equal("El identificador ingresado fue nulo.", cotizacionBuscar.Message);
                 _output.WriteLine("id Cotizacion en BuscarCotizacion es null --> Success");
-                
+                cantTest++;
                 
                 //Buscar repositorio vacio
                 var cotizacionBuscarReferenceException =
                 Assert.Throws<NullReferenceException>(() => _sistema.BuscarCotizacion("idtest"));
                 Assert.Equal("Repositorio de Cotizaciones se encuentra vacio", cotizacionBuscarReferenceException.Message);
                 _output.WriteLine("Repositorio cotizacion vacio --> Success");
+                cantTest++;
                 
                 
                 
@@ -137,11 +147,13 @@ namespace TestCore.Controllers
                 cotizacionBuscar = Assert.Throws<ModelException>(() => _sistema.BuscarCotizacion("id"));
                 Assert.Equal("No se encontro la cotizacion con el identificador ingresado.", cotizacionBuscar.Message);
                 _output.WriteLine("id no existe en el repositorio cotizacion --> Success");
+                cantTest++;
+                
                 
                 // Se encuentra una cotizacion
                 Assert.NotNull(_sistema.BuscarCotizacion("301v1"));
                 _output.WriteLine("id no existe en el repositorio cotizacion --> Success");
-                
+                cantTest++;
                 
 
             }
@@ -150,26 +162,32 @@ namespace TestCore.Controllers
             /**
              * UnitTest CambiarEstadoCotizacion
              */
-          {
+            {
                 //id Cotizacion es null
                 var cambioEstado =
                 Assert.Throws<ModelException>(() => _sistema.CambiarEstado((string) null, EstadoCotizacion.Aprobada));
                 Assert.Equal("El identificador ingresado fue nulo.", cambioEstado.Message);
                 _output.WriteLine("id cotizacion Cambiar estado es null --> Success");
-                
+                cantTest++;  
+              
+              
                 //id cotizacion no existe en el repositorio
                 cambioEstado =
                 Assert.Throws<ModelException>(() => _sistema.CambiarEstado("id1test", EstadoCotizacion.Aprobada));
                 Assert.Equal("No se encontro la cotizacion con el identificador ingresado.", cambioEstado.Message);
                 _output.WriteLine("id no existe en el repositorio cotizacion  --> Success");
-                
+                cantTest++;  
+              
+              
                 // Tratar de cambiar cotizacion a un estado invalido
                 cambioEstado =
                 Assert.Throws<ModelException>(() => _sistema.CambiarEstado("301v1", EstadoCotizacion.Aprobada));
                 Assert.Equal("Esta cotizacion solo puede ser enviada o rechazada!", cambioEstado.Message);
                 _output.WriteLine("Estado cotizacion Borrador  limitado a enviada o rechazada  --> Success");
+                cantTest++;
+              
             }
-
+    
 
           
             
@@ -186,12 +204,14 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir(p, (string) null));
                 Assert.Equal("La password no puede ser null.", usuarioAnadirParam.Message);
                 _output.WriteLine("Password del usuario es null --> Success");
+                cantTest++;
                 
                 // Persona es null     
                 var usuarioAnadir = 
                 Assert.Throws<ModelException>(() => _sistema.Anadir(null, "pwtest"));
                 Assert.Equal("Persona es null", usuarioAnadir.Message);
                 _output.WriteLine("Persona del usuario es null --> Success");
+                cantTest++;
             }
             
             
@@ -204,12 +224,14 @@ namespace TestCore.Controllers
                     Assert.Throws<ModelException>(() => _sistema.Login(null,null));
                 Assert.Equal("Password no puede ser null", loginUsuario.Message);
                 _output.WriteLine("Password es nulo en login --> Success");
+                cantTest++;
                 
                 // Usuario no existe en el repositorio
                 loginUsuario =
                 Assert.Throws<ModelException>(() => _sistema.Login("100875713","pw123"));
                 Assert.Equal("Usuario no encontrado", loginUsuario.Message);
                 _output.WriteLine("Usuario no encontrado login --> Success");
+                cantTest++;
                 
                 _sistema.Anadir(p);
                 
@@ -218,6 +240,7 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Login("194460880","pwtest"));
                 Assert.Equal("Existe la Persona pero no tiene credenciales de acceso", loginUsuario.Message);
                 _output.WriteLine("Persona sin credenciales --> Success");
+                cantTest++;
                 
                //Add usuario al repositorio para la siguiente unitTest
                 _sistema.Anadir(p,"1234");
@@ -227,10 +250,12 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Login("194460880","pwtest"));
                 Assert.Equal("Contrasena incorrecta!", loginUsuario.Message);
                 _output.WriteLine("Login contraseña incorrecta --> Success");
+                cantTest++;
                 
                 //Se hace un login exitoso, asegurando que se retornara un usuario
                 Assert.NotNull(_sistema.Login("194460880","1234"));
                 _output.WriteLine("Login Existoso --> Success");
+                cantTest++;
                 
             }
 
@@ -248,6 +273,7 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Persona)null));
                 Assert.Equal("Persona es null", personaAnadir.Message);
                 _output.WriteLine("Persona es null al agregar al repositorio --> Success");
+                cantTest++;
             }
             
             /*
@@ -259,12 +285,12 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.BuscarPersona((string)null));
                 Assert.Equal("El rut o email ingresado fue nulo.", personaBuscar.Message);
                 _output.WriteLine("Rut ingresado para buscar persona es null --> Success");
-                
+                cantTest++;
               
                 // se busca la persona asegurando exito de busqueda
                 Assert.NotNull(_sistema.BuscarPersona("194460880"));
                 _output.WriteLine("Persona encontrada con exito--> Success");
-          
+                cantTest++;
             }
             
             
@@ -284,13 +310,14 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Servicio)null,(Cotizacion)null));
                 Assert.Equal("El servicio ingresado fue nulo.", servicioAnadir.Message);
                 _output.WriteLine("Añadir servicio nulo --> Success");
+                cantTest++;
                 
                 //Añadir servicio a una cotizacion nula
                 servicioAnadir =
                 Assert.Throws<ModelException>(() => _sistema.Anadir(service,(Cotizacion)null));
                 Assert.Equal("La cotizacion ingresada fue nula.", servicioAnadir.Message);
                 _output.WriteLine("Añadir servicio a cotizacion nula --> Success");
-                   
+                cantTest++;
             }
             
             /*
@@ -301,6 +328,7 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Persona)null));
                 Assert.Equal("Persona es null", personaAnadir.Message);
                 _output.WriteLine("Persona es null al agregar al repositorio --> Success");
+                cantTest++;
             }
             
             
@@ -318,7 +346,7 @@ namespace TestCore.Controllers
                 Assert.Throws<ModelException>(() => _sistema.Anadir((Persona) null,TipoCliente.Otro));
                 Assert.Equal("Persona es null", clienteAnadir.Message);
                 _output.WriteLine("Persona es null al añadir como cliente --> Success");
-                
+                cantTest++;
             }
            
             /**
@@ -330,11 +358,15 @@ namespace TestCore.Controllers
                     Assert.Throws<ModelException>(() => _sistema.BuscarCliente(null));
                 Assert.Equal("El rut o email ingresado fue nulo.", clienteBuscar.Message);
                 _output.WriteLine("Rut null en buscarCliente --> Success");
-
+                cantTest++;
+                
                 //Persona retorna un cliente, asegurando exito de busqueda
                 Assert.NotNull(_sistema.BuscarCliente("194460880"));
                 _output.WriteLine("Busqueda exitosa BuscarCliente --> Success");
+                cantTest++;
             }
+            _output.WriteLine("\n---------------- \nCantidad de Test Success :"+cantTest);
+            
 
         }
 

@@ -70,7 +70,7 @@ namespace TestCore.DAO
             
             // Busqueda (no exitosa)
             {
-                Persona persona = repo.GetAll(null).FirstOrDefault();
+                Persona persona = repo.GetAll(p => p.Rut.Equals(null)).FirstOrDefault();
                 Assert.Null(persona);
             }
             
