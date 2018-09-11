@@ -10,32 +10,46 @@ using Core.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 
-//TODO : Implementar las operaciones restantes y verificar la funcionalidad
 namespace Core.Controllers
 {
-    
     /// <summary>
-    /// Implementacion de la interface ISistema.
+    /// Implementacion de los contratos de la interface ISistema.
     /// </summary>
     public sealed class Sistema : ISistema
     {
-        
-        public string EmailUpa { get; }
-
         // Patron Repositorio, generalizado via Generics
         // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/
+        
+        /// <inheritdoc />
+        public string EmailUpa { get; }
+
+        /// <summary>
+        /// Repositorio de Personas.
+        /// </summary>
         private readonly IRepository<Persona> _repositoryPersona;
 
+        /// <summary>
+        /// Repositorio de Usuarios.
+        /// </summary>
         private readonly IRepository<Usuario> _repositoryUsuario;
 
+        /// <summary>
+        /// Repositorio de Cotizaciones.
+        /// </summary>
         private readonly IRepository<Cotizacion> _repositoryCotizacion;
 
+        /// <summary>
+        /// Repositorio de Clientes.
+        /// </summary>
         private readonly IRepository<Cliente> _repositoryCliente;
 
+        /// <summary>
+        /// Variable que guarda el numero de la ultima cotizacion ingresada a la base de datos. Usa 300 por defecto.
+        /// </summary>
         private int _lastCotizacionNumber;
 
         /// <summary>
-        /// Inicializa los repositorios internos de la clase.
+        /// Constructor: Inicializa los repositorios internos de la clase.
         /// </summary>
         public Sistema(
             IRepository<Persona> repositoryPersona, 
@@ -64,7 +78,6 @@ namespace Core.Controllers
             
             
             //Determinar el numero de la ultima cotizacion guardada.
-
             var x = _repositoryCotizacion.GetAll();
             if (x.Count > 0)
             {
@@ -228,6 +241,11 @@ namespace Core.Controllers
             if (idCotizacion == null)
                 throw new ModelException("El identificador ingresado fue nulo.");
             
+            if (_repositoryCotizacion.GetAll().Count == 0)
+            {
+                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
+            }
+            
             //Obtener la cotizacion dado su identificador.
             Cotizacion cotizacion = _repositoryCotizacion.GetAll(c => c.Identificador == idCotizacion).FirstOrDefault();
 
@@ -238,7 +256,6 @@ namespace Core.Controllers
             //Se encontro; Retornar.
             return cotizacion;
         }
-        
         
         public IList<Cotizacion> BuscarCotizaciones(string busqueda)
         {
@@ -263,273 +280,9 @@ namespace Core.Controllers
             
             return resultados;
         }
-
-
-        /// <inheritdoc />
-        public IList<Cotizacion> GetCotizaciones()
-        {
-            if (_repositoryCotizacion.GetAll().Count == 0)
-            {
-                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
-            }
-            else
-            {
-                return _repositoryCotizacion.GetAll();
-            }
-        }
-        
-        //------------------------------------------------------------------------------
-        //    Operaciones de Sistema: Usuario (OS_USXXX)
-        //------------------------------------------------------------------------------
-
-        /// <inheritdoc />
-        public void Anadir(Persona persona, string password)
-        {
-            if (persona == null)
-            {
-                throw new ArgumentNullException("La persona no debe ser null");
-            }
-
-            if (String.IsNullOrEmpty(password))
-            {
-                throw new ArgumentNullException("La password no puede ser null");
-            }
-
-            // Guardo o actualizo en el backend.
-            Anadir(persona);
-
-            // Busco si el usuario ya existe
-            Usuario usuario = _repositoryUsuario.GetAll(u => u.Persona.Equals(persona)).FirstOrDefault();
-            
-            // Si no existe, lo creo
-            if (usuario == null)
-            {
-                usuario = new Usuario()
-                {
-                    Persona =  persona
-                };
-            }
-            
-            // Hash del password
-            usuario.Password = BCrypt.Net.BCrypt.HashPassword(password);
-            
-            // Almaceno en el backend
-            _repositoryUsuario.Add(usuario);
-        }
-
-        //TODO: Metodo de prueba. Solo sirve para poder crear los usuarios de prueba al inicio de la App.
-        /// <inheritdoc />
-        public void Anadir(Usuario usuario)
-        {
-            // Guardo o actualizo en el backend.
-            Anadir(usuario.Persona);
-            
-            // Busco si el usuario ya existe
-            var usuarioCopy = usuario;
-            Usuario usuario2 = _repositoryUsuario.GetAll(u => u.Persona.Equals(usuarioCopy.Persona)).FirstOrDefault();
-            
-            // Si no existe, lo creo
-            if (usuario2 != null)
-            {
-                throw new ModelException("Esta persona ya tiene una cuenta.");
-            }
-            
-            // Hash del password
-            usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
-            
-            // Almaceno en el backend
-            _repositoryUsuario.Add(usuario);
-        }
-
-        public Usuario Login(string rutEmail, string password)
-        {
-
-            if (String.IsNullOrEmpty(password))
-            {
-                throw new ModelException("Password no puede ser null");
-            }
-
-            Persona persona = BuscarPersona(rutEmail);
-            if (persona == null)
-            {
-                throw new ModelException("Usuario no encontrado");
-            }
-            
-            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Equals(persona));
-            if (usuarios.Count == 0)
-            {
-                throw new ModelException("Existe la Persona pero no tiene credenciales de acceso");
-            }
-
-            if (usuarios.Count > 1)
-            {
-                throw new ModelException("Mas de un usuario encontrado");
-            }
-
-            Usuario usuario = usuarios.Single();
-            if (!BCrypt.Net.BCrypt.Verify(password, usuario.Password))
-            {
-                throw new ModelException("Contrasena incorrecta!");
-            }
-
-            return usuario;
-        }
-
-
-        /// <inheritdoc />
-        public void Anadir(Persona persona)
-        {
-            // Verificacion de nulidad
-            if (persona == null)
-            {
-                throw new ModelException("Persona es null");
-            }
-
-            // La validacion de los atributos ocurre en el repositorio.
-            _repositoryPersona.Add(persona);
-        }
-
-        /// <inheritdoc />
-        public IList<Persona> GetPersonas()
-        {
-            return _repositoryPersona.GetAll();
-        }
-
-        /// <inheritdoc />
-        public Persona BuscarPersona(string rutEmail)
-        {
-            if (rutEmail == null)
-                throw new ModelException("El rut o email ingresado fue nulo.");
-            
-            return _repositoryPersona.GetAll(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail)).FirstOrDefault();
-        }
-
-        
-        //------------------------------------------------------------------------------
-        //    Operaciones de Sistema: Servicio (OS_SEXXX)
-        //------------------------------------------------------------------------------
-
-        /// <inheritdoc />
-        public void Anadir(Servicio servicio, Cotizacion cotizacion)
-        {
-            if (servicio == null)
-                throw new ModelException("El servicio ingresado fue nulo.");
-            if (cotizacion == null)
-                throw new ModelException("La cotizacion ingresada fue nula.");
-            
-            //Valido el servicio antes de anadirlo a la cotizacion:
-            servicio.Validate();
-            
-            //Si la lista de servicios de la cotizacion es nula, inicializarla:
-            if (cotizacion.Servicios == null)
-                cotizacion.Servicios = new List<Servicio>();
-            
-            //Anadir servicio.
-            cotizacion.Servicios.Add(servicio);
-        }
         
         /// <inheritdoc />
-        public void EditarServicio(Servicio servicio)
-        {
-            throw new NotImplementedException();
-        }
-        
-        /// <inheritdoc />
-        public void CambiarEstado(int index, EstadoServicio nuevoEstado)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void Borrar(int index, string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void Desplegar(int index, string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void DesplegarTodos(string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public IList<Servicio> GetServicios(string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        //------------------------------------------------------------------------------
-        //    Operaciones de Sistema: Cliente (OS_CLXXX)
-        //------------------------------------------------------------------------------
-
-        /// <inheritdoc />
-        public void Anadir(Persona persona, TipoCliente tipoCliente)
-        {
-            //Guardar o actualizar.
-            Anadir(persona);
-            
-            //Verificar si existe el cliente.
-            Cliente cliente = _repositoryCliente.GetAll(c => c.Persona.Equals(persona)).FirstOrDefault();
-            
-            //Crear el cliente si es que no existe:
-            if (cliente == null)
-            {
-                cliente = new Cliente()
-                {
-                    Persona = persona,
-                    Tipo = tipoCliente
-                };
-            }
-            
-            //Guardar cliente.
-            _repositoryCliente.Add(cliente);
-        }
-
-
-
-        /// <inheritdoc />
-        public Cliente BuscarCliente(string rut)
-        {
-            Persona persona = BuscarPersona(rut);
-
-            if (persona == null)
-                throw new ModelException("Cliente no encontrado.");
-
-            //La persona existe.
-            
-            Cliente cliente = _repositoryCliente.GetAll(c => c.Persona.Equals(persona)).FirstOrDefault();
-
-            if (cliente != null) return cliente;
-            
-
-            /*La persona existe, pero no esta registrada como cliente.
-            Esto quiere decir que esa persona es uno de los usuarios que usan la aplicacion.*/
-            Anadir(persona, TipoCliente.UnidadInterna);
-            cliente = BuscarCliente(rut);
-            
-            //Ahora deberia retornar un cliente existente.
-            return cliente;
-        }
-        
-        /// <inheritdoc />
-        public void Desplegar(string rut)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        IList<Cliente> ISistema.GetClientes()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EnviarEmail(Cotizacion cotizacionEnviar, string remitente, string emailPassword,
+        public void EnviarCotizacion(Cotizacion cotizacionEnviar, string remitente, string emailPassword,
             string destinatario, MailMessage mailMessage)
         {
             if (String.IsNullOrEmpty(emailPassword))
@@ -596,5 +349,288 @@ namespace Core.Controllers
             cotizacionEnviar.Estado = EstadoCotizacion.Enviada;
         }
 
+        /// <inheritdoc />
+        public IList<Cotizacion> GetCotizaciones()
+        {
+            if (_repositoryCotizacion.GetAll().Count == 0)
+            {
+                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
+            }
+            else
+            {
+                return _repositoryCotizacion.GetAll();
+            }
+        }
+        
+        //------------------------------------------------------------------------------
+        //    Operaciones de Sistema: Usuario (OS_USXXX)
+        //------------------------------------------------------------------------------
+
+        /// <inheritdoc />
+        public void Anadir(Persona persona, string password)
+        {
+            if (persona == null)
+            {
+                throw new ArgumentNullException("La persona no debe ser null");
+            }
+
+            if (String.IsNullOrEmpty(password))
+            {
+                throw new ArgumentNullException("La password no puede ser null");
+            }
+
+            // Guardo o actualizo en el backend.
+            Anadir(persona);
+
+            // Busco si el usuario ya existe
+            Usuario usuario = _repositoryUsuario.GetAll(u => u.Persona.Equals(persona)).FirstOrDefault();
+            
+            // Si no existe, lo creo
+            if (usuario == null)
+            {
+                usuario = new Usuario()
+                {
+                    Persona = persona
+                };
+            }
+
+            else
+                throw new ModelException("El usuario ya existe.");
+            
+            // Hash del password
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(password);
+            
+            // Almaceno en el backend
+            _repositoryUsuario.Add(usuario);
+        }
+
+        //TODO: Metodo de prueba. Solo sirve para poder crear los usuarios de prueba al inicio de la App.
+        /// <inheritdoc />
+        public void Anadir(Usuario usuario)
+        {
+            // Guardo o actualizo en el backend.
+            Anadir(usuario.Persona);
+            
+            // Busco si el usuario ya existe
+            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Rut.Equals(usuario.Persona.Rut));
+
+            if (usuarios.Count > 1)
+            {
+                throw new ModelException("Esta Persona ya tiene un Usuario.");
+            }
+                        
+            //(usuarios.Count == 0) -> No existe el usuario. Crearlo:
+
+            // Hash del password
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+            
+            // Almaceno en el backend
+            _repositoryUsuario.Add(usuario);
+        }
+
+        public Usuario Login(string rutEmail, string password)
+        {
+
+            if (String.IsNullOrEmpty(password))
+            {
+                throw new ModelException("Password no puede ser null");
+            }
+
+            Persona persona = BuscarPersona(rutEmail);
+            if (persona == null)
+            {
+                throw new ModelException("Usuario no encontrado");
+            }
+            
+            //La persona, aunque sea la misma, sera distinta por el id de base entity.
+            //Por eso usaremos el rut para comprobar.
+            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Rut.Equals(persona.Rut));
+            if (usuarios.Count == 0)
+            {
+                throw new ModelException("Existe la Persona pero no tiene credenciales de acceso");
+            }
+
+            if (usuarios.Count > 1)
+            {
+                throw new ModelException("Mas de un usuario encontrado");
+            }
+
+            Usuario usuario = usuarios.Single();
+            if (!BCrypt.Net.BCrypt.Verify(password, usuario.Password))
+            {
+                throw new ModelException("Contrasena incorrecta!");
+            }
+
+            return usuario;
+        }
+
+        //------------------------------------------------------------------------------
+        //    Operaciones de Sistema: Persona (OS_PEXXX)
+        //------------------------------------------------------------------------------
+        
+        /// <inheritdoc />
+        public void Anadir(Persona persona)
+        {
+            // Verificacion de nulidad
+            if (persona == null)
+            {
+                throw new ModelException("Persona es null");
+            }
+
+            // La validacion de los atributos ocurre en el repositorio.
+            _repositoryPersona.Add(persona);
+        }
+
+        /// <inheritdoc />
+        public Persona BuscarPersona(string rutEmail)
+        {
+            if (rutEmail == null)
+                throw new ModelException("El rut o email ingresado fue nulo.");
+            
+            return _repositoryPersona.GetAll(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail)).FirstOrDefault();
+        }
+
+        //------------------------------------------------------------------------------
+        //    Operaciones de Sistema: Servicio (OS_SEXXX)
+        //------------------------------------------------------------------------------
+
+        /// <inheritdoc />
+        public void Anadir(Servicio servicio, Cotizacion cotizacion)
+        {
+            if (servicio == null)
+                throw new ModelException("El servicio ingresado fue nulo.");
+            if (cotizacion == null)
+                throw new ModelException("La cotizacion ingresada fue nula.");
+            
+            //Valido el servicio antes de anadirlo a la cotizacion:
+            servicio.Validate();
+            
+            //Si la lista de servicios de la cotizacion es nula, inicializarla:
+            if (cotizacion.Servicios == null)
+                cotizacion.Servicios = new List<Servicio>();
+            
+            //Anadir servicio.
+            cotizacion.Servicios.Add(servicio);
+        }
+        
+        /// <inheritdoc />
+        public void CambiarEstado(int indexServicio, Cotizacion cotizacion, EstadoServicio nuevoEstado)
+        {
+            /*
+             * Reglas:
+             * 1.- Un servicio empieza siempre como SinIniciar.
+             * 2.- Un servicio SinIniciar solo puede cambiar a Rodaje o Cancelado.
+             * 3.- Un servicio en rodaje solo puede cambiar a Postproduccion o Cancelado.
+             * 4.- Un servicio en Postproduccion solo puede cambiar a revision o Cancelado.
+             * 5.- Un servicio en Revision solo puede cambiar
+             * 6.- Una cotizacion que esta terminada, no puede cambiar de estado.
+             */
+            
+            switch (cotizacion.Servicios[indexServicio-1].Estado)
+            {
+                case EstadoServicio.SinIniciar:
+                {
+                    if (nuevoEstado != EstadoServicio.PreProduccion && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Preproduccion o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.PreProduccion:
+                {
+                    if (nuevoEstado != EstadoServicio.Rodaje && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Rodaje o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Rodaje:
+                {
+                    if (nuevoEstado != EstadoServicio.PostProduccion && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Postproduccion o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.PostProduccion:
+                {
+                    if (nuevoEstado != EstadoServicio.Revision && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Revision o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Revision:
+                {
+                    if (nuevoEstado != EstadoServicio.Entregado && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede ser Entregado o Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Entregado:
+                {
+                    throw new ModelException("Este servicio no puede cambiar de estado!");
+                }
+                case EstadoServicio.Cancelado:
+                {
+                    throw new ModelException("Este servicio no puede cambiar de estado!");
+                }
+            }
+
+            //Si paso las reglas, actualizar.
+            cotizacion.Servicios[indexServicio-1].Estado = nuevoEstado;
+
+            /*
+             No se actualiza via el metodo Anadir de esta clase, ya que no se quiere anadir
+             una nueva version de la cotizacion, si no, actualizar un dato de esta que
+             solo les interesa a los usuarios del sistema y no a quien recibe la cotizacion.
+             */
+            
+            //Actualizar cotizacion.
+            _repositoryCotizacion.Add(cotizacion);
+        }
+
+        //------------------------------------------------------------------------------
+        //    Operaciones de Sistema: Cliente (OS_CLXXX)
+        //------------------------------------------------------------------------------
+
+        /// <inheritdoc />
+        public void Anadir(Persona persona, TipoCliente tipoCliente)
+        {
+            //Guardar o actualizar.
+            Anadir(persona);
+            
+            //Verificar si existe el cliente.
+            Cliente cliente = _repositoryCliente.GetAll(c => c.Persona.Equals(persona)).FirstOrDefault();
+            
+            //Crear el cliente si es que no existe:
+            if (cliente == null)
+            {
+                cliente = new Cliente()
+                {
+                    Persona = persona,
+                    Tipo = tipoCliente
+                };
+            }
+            
+            //Guardar cliente.
+            _repositoryCliente.Add(cliente);
+        }
+
+        /// <inheritdoc />
+        public Cliente BuscarCliente(string rut)
+        {
+            Persona persona = BuscarPersona(rut);
+
+            if (persona == null)
+                throw new ModelException("Cliente no encontrado.");
+
+            //La persona existe.
+            
+            Cliente cliente = _repositoryCliente.GetAll(c => c.Persona.Equals(persona)).FirstOrDefault();
+
+            if (cliente != null) return cliente;
+            
+
+            /*La persona existe, pero no esta registrada como cliente.
+            Esto quiere decir que esa persona es uno de los usuarios que usan la aplicacion.*/
+            Anadir(persona, TipoCliente.UnidadInterna);
+            cliente = BuscarCliente(rut);
+            
+            //Ahora deberia retornar un cliente existente.
+            return cliente;
+        }
+        
     }
 }

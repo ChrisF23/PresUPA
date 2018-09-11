@@ -86,14 +86,13 @@ namespace TestCore.Controllers
                 Assert.Equal("La cotizacion es null.", cotizacionEditar.Message);
                 _output.WriteLine("Cotizacion a editar es null --> Success");
             }
+            
 
             // Cambiar estado cotizacion
-            {
                 var cambioEstado =
                     Assert.Throws<ModelException>(() => _sistema.CambiarEstado(null, EstadoCotizacion.Aprobada));
                 Assert.Equal("El identificador ingresado fue nulo.", cambioEstado.Message);
                 _output.WriteLine("id cotizacion Cambiar estado es null --> Success");
-            }
 
             // Buscar Cotizacion
             {

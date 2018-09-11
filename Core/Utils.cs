@@ -9,7 +9,9 @@ namespace Core
     /// </summary>
     public sealed class Utils
     {
-        
+        /// <summary>
+        /// Una lista que contiene algunos de los servidores SMTP usados para el envio de correos.
+        /// </summary>
         public static readonly string[] SmtpServers = new string[]
         {
             "gmail",
@@ -17,7 +19,12 @@ namespace Core
             "office365",
             "outlook"
         };
-
+        
+        /// <summary>
+        /// Retorna la fecha entregada en formato espanol.
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
         public static string ToFormatedDate(DateTime dt)
         {
             return dt.ToString("D", 

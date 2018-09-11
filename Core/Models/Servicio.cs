@@ -3,9 +3,7 @@
 namespace Core.Models
 {    
     /// <summary>
-    /// Servicios de una cotizacion
-    /// no se almacena en un repositorio
-    /// pertenece en List como atributo de Cotizaciones
+    /// Clase que representa un Servicio en una Cotizacion.
     /// </summary>
     public class Servicio : BaseEntity
     {
@@ -19,7 +17,6 @@ namespace Core.Models
         /// </summary>
         public int CostoUnidad { get; set; }
         
-        
         /// <summary>
         /// Cantidad de veces que se presta el servicio
         /// </summary>
@@ -30,7 +27,7 @@ namespace Core.Models
         /// </summary>
         public EstadoServicio Estado { get; set; }
         
-
+        /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
         {
             
@@ -58,9 +55,14 @@ namespace Core.Models
             {
                 throw new ModelException("La cantidad del servicio debe ser al menos 1");
             }
+            
 
         }
 
+        /// <summary>
+        /// Retorna la representacion del objeto Servicio a string.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return
@@ -68,6 +70,16 @@ namespace Core.Models
                 + "Cantidad: " + Cantidad + "\n"
                 + "Costo unidad: $" + CostoUnidad + "\n"
                 + "Sub total: $" + (CostoUnidad*Cantidad);
+        }
+
+        /// <summary>
+        /// Retorna un resumen de la representacion del objeto Servicio a string.
+        /// </summary>
+        /// <returns></returns>
+        public string ToStringBrief()
+        {
+            return "Descripcion: " + Descripcion + "\n"
+                   + "Estado: " + Estado;
         }
     }
     

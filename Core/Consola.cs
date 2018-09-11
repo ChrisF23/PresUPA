@@ -8,21 +8,28 @@ using SQLitePCL;
 
 namespace Core
 {
+    /// <summary>
+    /// Clase que simula la Vista de la aplicacion.
+    /// </summary>
     public class Consola
     {
+        /// <summary>
+        /// Despliega el menu por defecto para un usuario director
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <param name="usuario"></param>
         public static void MenuDirector(ISistema sistema, Usuario usuario)
         {
-             
-            string input = "...";
-            while (input != null && !input.Equals("0"))
+            while (true)
             {
                 Console.WriteLine("\n>Menu principal");
                 Console.WriteLine("[1] Administrar Cotizaciones");
+                //No alcanzó el tiempo:
                 //Console.WriteLine("[2] Administrar Clientes");
                 //Console.WriteLine("[3] Administrar Usuarios");
                 Console.WriteLine("[0] Cerrar Sesion");
 
-                input = Console.ReadLine();
+                string input = Console.ReadLine();
                 
                 switch (input)
                 {
@@ -34,30 +41,95 @@ namespace Core
                     case "3":
                         break;
                     case "0":
-                        Console.WriteLine("\nCerrando Sesion...");
-                        break;
+                        return;
                     default:
                         continue;
                 }
             }
         }
         
-        public static void MenuAdministrarCotizaciones(ISistema sistema, Usuario usuario)
+        /// <summary>
+        /// Despliega el menu por defecto de un usuario productor.
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <param name="usuario"></param>
+        public static void MenuProductor(ISistema sistema, Usuario usuario)
         {
-            string input = "...";
-            while (input != null && !input.Equals("0"))
+            while (true)
+            {
+                Console.WriteLine("\n>Menu principal");
+                Console.WriteLine("[1] Ver Cotizaciones");
+                Console.WriteLine("[2] Cambiar Estado de Servicios");
+                Console.WriteLine("[0] Cerrar Sesion");
+
+                string input = Console.ReadLine();
+                
+                switch (input)
+                {
+                    case "1":
+                        MostrarCotizacionesParaProductorYSupervisor(sistema);
+                        break;
+                    case "2":
+                        FormularioCambiarEstadoServicio(sistema);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        continue;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Despliega el menu por defecto de un usuario productor.
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <param name="usuario"></param>
+        public static void MenuSupervisor(ISistema sistema, Usuario usuario)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n>Menu principal");
+                Console.WriteLine("[1] Ver Cotizaciones");
+                Console.WriteLine("[0] Cerrar Sesion");
+
+                string input = Console.ReadLine();
+                
+                switch (input)
+                {
+                    case "1":
+                        MostrarCotizacionesParaProductorYSupervisor(sistema);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        continue;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Despliega el menu de administracion de cotizaciones.
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <param name="usuario"></param>
+        private static void MenuAdministrarCotizaciones(ISistema sistema, Usuario usuario)
+        {
+         
+            while (true)
             {
                 Console.WriteLine("\n>Administrar Cotizaciones");
                 Console.WriteLine("[1] Anadir Cotizacion");
                 Console.WriteLine("[2] Borrar Cotizacion");
                 Console.WriteLine("[3] Editar Cotizacion");
                 Console.WriteLine("[4] Cambiar Estado de Cotizacion");
-                Console.WriteLine("[5] Buscar Cotizacion");
-                Console.WriteLine("[6] Ver cotizaciones");
-                Console.WriteLine("[7] Enviar Cotizacion");
+                Console.WriteLine("[5] Cambiar Estado de Servicio");
+                Console.WriteLine("[6] Buscar Cotizaciones");
+                Console.WriteLine("[7] Ver cotizaciones");
+                Console.WriteLine("[8] Enviar Cotizacion");
                 Console.WriteLine("[0] Volver al menu anterior");
 
-                input = Console.ReadLine();
+                string input = Console.ReadLine();
                 
                 switch (input)
                 {
@@ -82,16 +154,22 @@ namespace Core
                         break;
                     }
                     case "5":
-                        //TODO: Implementar Busqueda (En el mejor de los casos, Metabusqueda).
-                        FormularioBuscarCotizaciones(sistema);
+                        FormularioCambiarEstadoServicio(sistema);
+                        
                         break;
                     
                     case "6":
                     {
-                        MostrarCotizacionesParaDirector(sistema);
+                        //TODO: Implementar Busqueda (En el mejor de los casos, Metabusqueda).
+                        FormularioBuscarCotizaciones(sistema);
                         break;
                     }
                     case "7":
+                    {
+                        MostrarCotizacionesParaDirector(sistema);
+                        break;
+                    }
+                    case "8":
                     {
                         FormularioEnviarCotizacion(sistema, usuario);
                         break;
@@ -104,8 +182,11 @@ namespace Core
             }
         }
 
-
-        public static void FormularioBuscarCotizaciones(ISistema sistema)
+        /// <summary>
+        /// Despliega un formulario para buscar cotizaciones.
+        /// </summary>
+        /// <param name="sistema"></param>
+        private static void FormularioBuscarCotizaciones(ISistema sistema)
         {
             Console.WriteLine(">Ingrese algun termino de busqueda:");
             string input = Console.ReadLine();
@@ -130,7 +211,7 @@ namespace Core
                 }
                 Console.WriteLine("----------------\n");                
             }
-            catch (ModelException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -140,7 +221,7 @@ namespace Core
         /// Muestra todas las cotizaciones que se encuentran en el sistema.
         /// </summary>
         /// <param name="sistema"></param>
-        public static void MostrarCotizacionesParaDirector(ISistema sistema)
+        private static void MostrarCotizacionesParaDirector(ISistema sistema)
         {
             Console.WriteLine("Mostrando Cotizaciones...\n");
             try
@@ -153,37 +234,43 @@ namespace Core
                 }
                 Console.WriteLine("--------------------------\n");
             }
-            catch (NullReferenceException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
         }
         
         /// <summary>
-        /// Muestra solo las cotizaciones que han sido aprovadas.
+        /// Muestra solo las cotizaciones que han sido aprobadas.
         /// </summary>
         /// <param name="sistema"></param>
-        public static void MostrarCotizacionesParaProductor(ISistema sistema)
+        private static void MostrarCotizacionesParaProductorYSupervisor(ISistema sistema)
         {
-            Console.WriteLine("Mostrando Cotizaciones...");
-            foreach (Cotizacion cotizacion in sistema.GetCotizaciones())
-                if (cotizacion.Estado == EstadoCotizacion.Aprobada)
-                Console.WriteLine(Utils.ToJson(cotizacion));
+            Console.WriteLine("Mostrando Cotizaciones...\n");
+            try
+            {
+                IList<Cotizacion> cotizaciones = sistema.GetCotizaciones();
+                foreach (Cotizacion cotizacion in cotizaciones)
+                {
+                    if (cotizacion.Estado == EstadoCotizacion.Aprobada)
+                    {
+                        Console.WriteLine("\n--------------------------");
+                        Console.WriteLine(cotizacion.ToString());
+                    }
+                }
+                Console.WriteLine("--------------------------\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
         
         /// <summary>
-        /// Muestra solo las cotizaciones que han sido terminadas.
+        /// Despliega un formulario para borrar una cotizacion.
         /// </summary>
         /// <param name="sistema"></param>
-        public static void MostrarCotizacionesParaSupervisor(ISistema sistema)
-        {
-            Console.WriteLine("Mostrando Cotizaciones...");
-            foreach (Cotizacion cotizacion in sistema.GetCotizaciones())
-                if (cotizacion.Estado == EstadoCotizacion.Terminada)
-                    Console.WriteLine(Utils.ToJson(cotizacion));
-        }
-        
-        public static void FormularioBorrarCotizacion(ISistema sistema)
+        private static void FormularioBorrarCotizacion(ISistema sistema)
         {
             Console.WriteLine("\n>Borrar Cotizacion");
 
@@ -202,7 +289,11 @@ namespace Core
             
         }
 
-        public static void FormularioCambiarEstadoCotizacion(ISistema sistema)
+        /// <summary>
+        /// Despliega un formulario para cambiar el estado de una cotizacion.
+        /// </summary>
+        /// <param name="sistema"></param>
+        private static void FormularioCambiarEstadoCotizacion(ISistema sistema)
         {
             
             Console.WriteLine("\n>Cambiar Estado de Cotizacion");
@@ -216,7 +307,7 @@ namespace Core
             {
                 estadoAntiguo = sistema.BuscarCotizacion(identificador).Estado;   
             }
-            catch (ModelException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return;
@@ -284,7 +375,11 @@ namespace Core
             }
         }
 
-        public static void FormularioEditarCotizacion(ISistema sistema)
+        /// <summary>
+        /// Despliega un formulario para editar una cotizacion.
+        /// </summary>
+        /// <param name="sistema"></param>
+        private static void FormularioEditarCotizacion(ISistema sistema)
         {
             
             Console.WriteLine("\n>Editar Cotizacion");
@@ -297,7 +392,7 @@ namespace Core
             {
                 original = sistema.BuscarCotizacion(identificador);
             }
-            catch (ModelException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return;
@@ -386,7 +481,6 @@ namespace Core
                         }
                         Console.WriteLine("------------------\n");
 
-                        //TODO: Terminar esto!
                         while (true)
                         {
                             Console.WriteLine(">Ingrese el indice del servicio que desea editar");
@@ -399,7 +493,7 @@ namespace Core
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine(e);
+                                Console.WriteLine(e.Message);
                                 continue;
                             }
 
@@ -467,7 +561,127 @@ namespace Core
             
         }
 
-        public static void FormularioNuevaCotizacion(ISistema sistema)
+        /// <summary>
+        /// Despliega un formulario para cambiar el estado de un servicio.
+        /// </summary>
+        /// <param name="sistema"></param>
+        private static void FormularioCambiarEstadoServicio(ISistema sistema)
+        {
+            Console.WriteLine("Ingrese el identificador de la cotizacion:");
+            string identificador = Console.ReadLine();
+            
+            Cotizacion cotizacion = null;
+            try
+            {
+                cotizacion = sistema.BuscarCotizacion(identificador);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            if (cotizacion.Estado != EstadoCotizacion.Aprobada)
+            {
+                Console.WriteLine("No tiene permiso para poder editar los estados de esta cotizacion.");
+                return;
+            }
+
+            int index = 0;
+            foreach (Servicio s in cotizacion.Servicios)
+            {
+                Console.WriteLine("\n------------------");
+                Console.WriteLine("Indice: " + (++index));
+                Console.WriteLine(s.ToStringBrief());
+            }
+            Console.WriteLine("------------------\n");
+
+            while (true)
+            {
+                Console.WriteLine("\nIngrese el indice del servicio al cual quiere cambiar su estado:");
+                Console.WriteLine("[Otro] Cancelar");
+                int editIndex = 0;
+                try
+                {
+                    editIndex = int.Parse(Console.ReadLine());
+                                
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
+
+                EstadoServicio nuevoEstado = EstadoServicio.SinIniciar;
+
+                if (editIndex >= 1 && editIndex <= cotizacion.Servicios.Count)
+                {
+                    Servicio editServicio = cotizacion.Servicios[editIndex - 1];
+                    Console.WriteLine("\n------------------");
+                    Console.WriteLine(editServicio.ToStringBrief());
+                    Console.WriteLine("------------------\n");
+
+                    Console.WriteLine("Ingrese el nuevo estado del servicio:");
+                    Console.WriteLine("[1] " + EstadoServicio.PreProduccion);
+                    Console.WriteLine("[2] " + EstadoServicio.Rodaje);
+                    Console.WriteLine("[3] " + EstadoServicio.PostProduccion);
+                    Console.WriteLine("[4] " + EstadoServicio.Revision);
+                    Console.WriteLine("[5] " + EstadoServicio.Entregado);
+                    Console.WriteLine("[6] " + EstadoServicio.Cancelado);
+                    Console.WriteLine("[0] Cancelar cambio de estado");
+
+                    string input = Console.ReadLine();
+
+                    switch (input)
+                    {
+                        case "1":
+                            nuevoEstado = EstadoServicio.PreProduccion;
+                            break;
+                        case "2":
+                            nuevoEstado = EstadoServicio.Rodaje;
+                            break;
+                        case "3":
+                            nuevoEstado = EstadoServicio.PostProduccion;
+                            break;
+                        case "4":
+                            nuevoEstado = EstadoServicio.Revision;
+                            break;
+                        case "5":
+                            nuevoEstado = EstadoServicio.Entregado;
+                            break;
+                        case "6":
+                            nuevoEstado = EstadoServicio.Cancelado;
+                            break;
+                        case "0":
+                            return;
+                        default:
+                            continue;
+                    }
+
+                    try
+                    {
+                        sistema.CambiarEstado(editIndex, cotizacion, nuevoEstado);
+                        Console.WriteLine("Se ha cambiado el estado del servicio.");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine("\nCancelando cambio de estado...");
+                        return;
+                    }
+
+
+                }
+                else
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Despliega un formulario para ingresar una nueva cotizacion al sistema.
+        /// </summary>
+        /// <param name="sistema"></param>
+        private static void FormularioNuevaCotizacion(ISistema sistema)
         {
             
             Console.WriteLine("\n>Anadir Cotizacion");
@@ -570,7 +784,11 @@ namespace Core
             }
         }
 
-        public static Servicio FormularioNuevoServicio()
+        /// <summary>
+        /// Despliega un formulario para ingresar un nuevo servicio a una cotizacion.
+        /// </summary>
+        /// <returns></returns>
+        private static Servicio FormularioNuevoServicio()
         {
             Console.WriteLine("\n>Anadir Servicio");
 
@@ -609,11 +827,12 @@ namespace Core
         }
 
         /// <summary>
+        /// Despliega un formulario para ingresar un nuevo cliente a la cotizacion (y al sistema).
         /// Retorna un nuevo cliente. Si ocurre algun error al ingresar los datos, retorna nulo.
         /// </summary>
         /// <param name="sistema"></param>
         /// <returns></returns>
-        public static Cliente FormularioNuevoCliente(ISistema sistema)
+        private static Cliente FormularioNuevoCliente(ISistema sistema)
         {
 
             TipoCliente tipoCliente = TipoCliente.Otro;
@@ -680,7 +899,12 @@ namespace Core
             return null;
         }
 
-        public static void FormularioEnviarCotizacion(ISistema sistema, Usuario usuario)
+        /// <summary>
+        /// Despliega un formulario para enviar una cotizacion a su cliente.
+        /// </summary>
+        /// <param name="sistema"></param>
+        /// <param name="usuario"></param>
+        private static void FormularioEnviarCotizacion(ISistema sistema, Usuario usuario)
         {
             
             Console.WriteLine("\n>Enviar Cotizacion");
@@ -693,9 +917,9 @@ namespace Core
             {
                 cotizaciones = sistema.GetCotizaciones();
             }
-            catch (ModelException e)
+            catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
                 return;    //Volver si no hay cotizaciones u ocurre otro error.
             }
             
@@ -715,7 +939,7 @@ namespace Core
             {
                 cotizacionEnviar = sistema.BuscarCotizacion(identificador);
             }
-            catch (ModelException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return;
@@ -807,7 +1031,7 @@ namespace Core
             
             try
             {
-                sistema.EnviarEmail(cotizacionEnviar, remitente, emailPassword, destinatario, mailMessage);
+                sistema.EnviarCotizacion(cotizacionEnviar, remitente, emailPassword, destinatario, mailMessage);
                 Console.WriteLine("Se ha enviado la cotizacion!");
             }
             catch (Exception e)
@@ -818,47 +1042,5 @@ namespace Core
             }
         }
         
-        public static void MenuProductor(ISistema sistema, Usuario usuario)
-        {
-            string input = "...";
-            while (input != null && !input.Equals("0"))
-            {
-                Console.WriteLine("\n>Menu principal");
-                Console.WriteLine("[1] Administrar Servicios");
-                Console.WriteLine("[0] Salir");
-
-                input = Console.ReadLine();
-                
-                switch (input)
-                {
-                    case "1":
-                        break;
-                    default:
-                        continue;
-                }
-            }
-        }
-        
-        public static void MenuSupervisor(ISistema sistema, Usuario usuario)
-        {
-            string input = "...";
-            while (input != null && !input.Equals("0"))
-            {
-                Console.WriteLine("\n>Menu principal");
-                Console.WriteLine("[1] Ver Cotizaciones");
-                Console.WriteLine("[0] Salir");
-
-                input = Console.ReadLine();
-
-                switch (input)
-                {
-                    case "1":
-                        break;
-                    default:
-                        continue;
-                }
-            }
-        }
-
     }
 } 
