@@ -141,7 +141,7 @@ namespace Core.Models
                 "Identificador: " + Identificador +
                 "\nTitulo: " + Titulo +
                 "\nDescripcion: " + Descripcion +
-                "\nFecha de Creacion: " + FechaCreacion +
+                "\nFecha de Creacion: " + Utils.ToFormatedDate(FechaCreacion) +
                 "\n\n>Cliente: \n\n" + Cliente.ToString() +
                 "\n\n>Servicios: \n" + MisServiciosToString() +
                 "\nCosto Total: $" + CostoTotal +
@@ -169,6 +169,8 @@ namespace Core.Models
             return "Identificador: " + Identificador +
                    "\nTitulo: " + Titulo +
                    "\nDescripcion: " + Descripcion +
+                   "\nRut Cliente: "+ Cliente.Persona.Rut +
+                   "\nCantidad de Servicios: "+ Servicios.Count + 
                    "\nEstado: " + Estado;
         }
     }
@@ -179,7 +181,7 @@ namespace Core.Models
     {
         Borrador,
         Enviada,
-        Aprovada,
+        Aprobada,
         Rechazada,
         Terminada
     }

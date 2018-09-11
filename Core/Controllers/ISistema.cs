@@ -43,6 +43,10 @@ namespace Core.Controllers
         /// <param name="idCotizacion"></param>
         /// <returns></returns>
         Cotizacion BuscarCotizacion(string idCotizacion);
+
+
+
+        IList<Cotizacion> BuscarCotizaciones(string busqueda);
        
         /*
         void EnviarCotizacion(Cotizacion cotizacion);

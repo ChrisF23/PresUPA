@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -7,6 +8,8 @@ using System.Text;
 using Core.DAO;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Expressions;
+
 //TODO : Implementar las operaciones restantes y verificar la funcionalidad
 namespace Core.Controllers
 {
@@ -134,7 +137,6 @@ namespace Core.Controllers
             _repositoryCotizacion.Remove(BuscarCotizacion(idCotizacion));
         }
 
-        //TODO Metodo que permite asignar un nuevo identificador a la cotizacion.
         /// <inheritdoc />
         public void Editar(Cotizacion cotizacion)
         {
@@ -159,7 +161,51 @@ namespace Core.Controllers
         {
             //Verificacion de nulidad de idCotizacion se realiza en BuscarCotizacion.
             Cotizacion cotizacion = BuscarCotizacion(idCotizacion);
-            //Enums nunca son nulos.
+            
+            /*
+             * Reglas:
+             * 1.- Una cotizacion empieza siempre como borrador.
+             * 2.- Una cotizacion que esta en borrador, solo puede ser enviada o rechazada.
+             * 3.- Una cotizacion enviada solo puede ser aprobada o rechazada.
+             * 4.- Una cotizacion que ha sido enviada o rechazada, no puede volver a estar en borrador.
+             * 5.- Una cotizacion que ha sido aprobada, solo puede ser terminada o rechazada.
+             * 6.- Una cotizacion que esta terminada, no puede cambiar de estado.
+             */
+
+
+            switch (cotizacion.Estado)
+            {
+                case EstadoCotizacion.Borrador:
+                {
+                    if (nuevoEstado != EstadoCotizacion.Enviada && nuevoEstado != EstadoCotizacion.Rechazada)
+                        throw new ModelException("Esta cotizacion solo puede ser enviada o rechazada!");
+                    break;
+                }
+                case EstadoCotizacion.Enviada:
+                {
+                    if (nuevoEstado != EstadoCotizacion.Aprobada && nuevoEstado != EstadoCotizacion.Rechazada)
+                        throw new ModelException("Esta cotizacion solo puede ser aprobada o rechazada!");
+                    break;
+                }
+                case EstadoCotizacion.Rechazada:
+                {
+                    if (nuevoEstado != EstadoCotizacion.Aprobada && nuevoEstado != EstadoCotizacion.Rechazada)
+                        throw new ModelException("Esta cotizacion solo puede ser aprobada o rechazada!");
+                    break;
+                }
+                case EstadoCotizacion.Aprobada:
+                {
+                    if (nuevoEstado != EstadoCotizacion.Terminada && nuevoEstado != EstadoCotizacion.Rechazada)
+                        throw new ModelException("Esta cotizacion solo puede ser terminada o rechazada!");
+                    break;
+                }
+                case EstadoCotizacion.Terminada:
+                {
+                    throw new ModelException("Esta cotizacion no puede cambiar de estado!");
+                }
+            }
+
+            //Si paso las reglas, actualizar.
             cotizacion.Estado = nuevoEstado;
 
             /*
@@ -188,8 +234,33 @@ namespace Core.Controllers
             //Se encontro; Retornar.
             return cotizacion;
         }
+        
+        
+        public IList<Cotizacion> BuscarCotizaciones(string busqueda)
+        {
+            if (string.IsNullOrEmpty(busqueda))
+                throw new ModelException("La busqueda no puede estar vacia!");
 
-       
+            if (_repositoryCotizacion.GetAll().Count == 0)
+            {
+                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
+            }
+            
+            IList<Cotizacion> resultados = _repositoryCotizacion.GetAll(
+                c => c.Titulo.Contains(busqueda) || c.Descripcion.Contains(busqueda) || 
+                     c.Identificador.Contains(busqueda) || c.CostoTotal.ToString().Contains(busqueda) || 
+                     Utils.ToFormatedDate(c.FechaCreacion).Contains(busqueda) || 
+                     c.FechaCreacion.ToShortDateString().Contains(busqueda) || c.Estado.ToString().Contains(busqueda) ||
+                     c.Cliente.Tipo.ToString().Contains(busqueda) || c.Cliente.Persona.Nombre.Contains(busqueda) ||
+                     c.Cliente.Persona.Paterno.Contains(busqueda) || c.Cliente.Persona.Materno.Contains(busqueda) ||
+                     c.Cliente.Persona.Rut.Contains(busqueda) || c.Cliente.Persona.Email.Contains(busqueda)
+                     
+            );
+            
+            return resultados;
+        }
+
+
         /// <inheritdoc />
         IList<Cotizacion> ISistema.GetCotizaciones()
         {
@@ -285,8 +356,6 @@ namespace Core.Controllers
             return usuario;
         }
 
-
-        
 
         /// <inheritdoc />
         public void Anadir(Persona persona)

@@ -18,8 +18,8 @@ namespace Core
             {
                 Console.WriteLine("\n>Menu principal");
                 Console.WriteLine("[1] Administrar Cotizaciones");
-                Console.WriteLine("[2] Administrar Clientes");
-                Console.WriteLine("[3] Administrar Usuarios");
+                //Console.WriteLine("[2] Administrar Clientes");
+                //Console.WriteLine("[3] Administrar Usuarios");
                 Console.WriteLine("[0] Cerrar Sesion");
 
                 input = Console.ReadLine();
@@ -55,7 +55,6 @@ namespace Core
                 Console.WriteLine("[5] Buscar Cotizacion");
                 Console.WriteLine("[6] Ver cotizaciones");
                 Console.WriteLine("[7] Enviar Cotizacion");
-                
                 Console.WriteLine("[0] Volver al menu anterior");
 
                 input = Console.ReadLine();
@@ -84,6 +83,7 @@ namespace Core
                     }
                     case "5":
                         //TODO: Implementar Busqueda (En el mejor de los casos, Metabusqueda).
+                        FormularioBuscarCotizaciones(sistema);
                         break;
                     
                     case "6":
@@ -101,6 +101,38 @@ namespace Core
                     default:
                         continue;
                 }
+            }
+        }
+
+
+        public static void FormularioBuscarCotizaciones(ISistema sistema)
+        {
+            Console.WriteLine(">Ingrese algun termino de busqueda:");
+            string input = Console.ReadLine();
+
+            try
+            {
+                IList<Cotizacion> resultados = sistema.BuscarCotizaciones(input);
+
+                if (resultados.Count == 0)
+                {
+                    Console.WriteLine("\nNo se encontraron resultados para su busqueda.");
+                    return;
+                }
+
+                Console.WriteLine("\nSe encontraron " + resultados.Count +
+                                  " cotizaciones que coinciden con su busqueda:");
+                
+                foreach (Cotizacion resultado in resultados)
+                {
+                    Console.WriteLine("\n----------------");
+                    Console.WriteLine(resultado.ToString());
+                }
+                Console.WriteLine("----------------\n");                
+            }
+            catch (ModelException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -135,7 +167,7 @@ namespace Core
         {
             Console.WriteLine("Mostrando Cotizaciones...");
             foreach (Cotizacion cotizacion in sistema.GetCotizaciones())
-                if (cotizacion.Estado == EstadoCotizacion.Aprovada)
+                if (cotizacion.Estado == EstadoCotizacion.Aprobada)
                 Console.WriteLine(Utils.ToJson(cotizacion));
         }
         
@@ -151,8 +183,6 @@ namespace Core
                     Console.WriteLine(Utils.ToJson(cotizacion));
         }
         
-        
-
         public static void FormularioBorrarCotizacion(ISistema sistema)
         {
             Console.WriteLine("\n>Borrar Cotizacion");
@@ -172,7 +202,6 @@ namespace Core
             
         }
 
-        //TODO: Completar!
         public static void FormularioCambiarEstadoCotizacion(ISistema sistema)
         {
             
@@ -200,7 +229,7 @@ namespace Core
                 Console.WriteLine("");
                 Console.WriteLine("Ingrese el nuevo estado de la cotizacion:");
                 Console.WriteLine("[1] " + EstadoCotizacion.Borrador);
-                Console.WriteLine("[2] " + EstadoCotizacion.Aprovada);
+                Console.WriteLine("[2] " + EstadoCotizacion.Aprobada);
                 Console.WriteLine("[3] " + EstadoCotizacion.Rechazada);
                 Console.WriteLine("[4] " + EstadoCotizacion.Terminada);
                 Console.WriteLine("[0] Cancelar cambio de estado");
@@ -215,7 +244,7 @@ namespace Core
                         estadoNuevo = EstadoCotizacion.Borrador;
                         break;
                     case "2":
-                        estadoNuevo = EstadoCotizacion.Aprovada;
+                        estadoNuevo = EstadoCotizacion.Aprobada;
                         break;
                     case "3":
                         estadoNuevo = EstadoCotizacion.Rechazada;
@@ -255,7 +284,6 @@ namespace Core
             }
         }
 
-        
         public static void FormularioEditarCotizacion(ISistema sistema)
         {
             
@@ -790,8 +818,6 @@ namespace Core
             }
         }
         
-
-
         public static void MenuProductor(ISistema sistema, Usuario usuario)
         {
             string input = "...";
@@ -813,8 +839,6 @@ namespace Core
             }
         }
         
-        
-
         public static void MenuSupervisor(ISistema sistema, Usuario usuario)
         {
             string input = "...";
@@ -835,9 +859,6 @@ namespace Core
                 }
             }
         }
-        
-        
-        
-        
+
     }
 } 
