@@ -224,6 +224,11 @@ namespace Core.Controllers
             if (idCotizacion == null)
                 throw new ModelException("El identificador ingresado fue nulo.");
             
+            if (_repositoryCotizacion.GetAll().Count == 0)
+            {
+                throw new NullReferenceException("Repositorio de Cotizaciones se encuentra vacio");
+            }
+            
             //Obtener la cotizacion dado su identificador.
             Cotizacion cotizacion = _repositoryCotizacion.GetAll(c => c.Identificador == idCotizacion).FirstOrDefault();
 
@@ -292,9 +297,12 @@ namespace Core.Controllers
             {
                 usuario = new Usuario()
                 {
-                    Persona =  persona
+                    Persona = persona
                 };
             }
+
+            else
+                throw new ModelException("El usuario ya existe.");
             
             // Hash del password
             usuario.Password = BCrypt.Net.BCrypt.HashPassword(password);
@@ -311,15 +319,15 @@ namespace Core.Controllers
             Anadir(usuario.Persona);
             
             // Busco si el usuario ya existe
-            var usuarioCopy = usuario;
-            Usuario usuario2 = _repositoryUsuario.GetAll(u => u.Persona.Equals(usuarioCopy.Persona)).FirstOrDefault();
-            
-            // Si no existe, lo creo
-            if (usuario2 != null)
+            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Rut.Equals(usuario.Persona.Rut));
+
+            if (usuarios.Count > 1)
             {
-                throw new ModelException("Esta persona ya tiene una cuenta.");
+                throw new ModelException("Esta Persona ya tiene un Usuario.");
             }
-            
+                        
+            //(usuarios.Count == 0) -> No existe el usuario. Crearlo:
+
             // Hash del password
             usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
             
@@ -336,7 +344,9 @@ namespace Core.Controllers
                 throw new ModelException("Usuario no encontrado");
             }
             
-            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Equals(persona));
+            //La persona, aunque sea la misma, sera distinta por el id de base entity.
+            //Por eso usaremos el rut para comprobar.
+            IList<Usuario> usuarios = _repositoryUsuario.GetAll(u => u.Persona.Rut.Equals(persona.Rut));
             if (usuarios.Count == 0)
             {
                 throw new ModelException("Existe la Persona pero no tiene credenciales de acceso");
@@ -416,9 +426,73 @@ namespace Core.Controllers
         }
         
         /// <inheritdoc />
-        public void CambiarEstado(int index, EstadoServicio nuevoEstado)
+        public void CambiarEstado(int indexServicio, Cotizacion cotizacion, EstadoServicio nuevoEstado)
         {
-            throw new NotImplementedException();
+            /*
+             * Reglas:
+             * 1.- Un servicio empieza siempre como SinIniciar.
+             * 2.- Un servicio SinIniciar solo puede cambiar a Rodaje o Cancelado.
+             * 3.- Un servicio en rodaje solo puede cambiar a Postproduccion o Cancelado.
+             * 4.- Un servicio en Postproduccion solo puede cambiar a revision o Cancelado.
+             * 5.- Un servicio en Revision solo puede cambiar
+             * 6.- Una cotizacion que esta terminada, no puede cambiar de estado.
+             */
+            
+            
+
+            switch (cotizacion.Servicios[indexServicio-1].Estado)
+            {
+                case EstadoServicio.SinIniciar:
+                {
+                    if (nuevoEstado != EstadoServicio.PreProduccion && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Preproduccion o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.PreProduccion:
+                {
+                    if (nuevoEstado != EstadoServicio.Rodaje && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Rodaje o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Rodaje:
+                {
+                    if (nuevoEstado != EstadoServicio.PostProduccion && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Postproduccion o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.PostProduccion:
+                {
+                    if (nuevoEstado != EstadoServicio.Revision && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede cambiar a Revision o ser Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Revision:
+                {
+                    if (nuevoEstado != EstadoServicio.Entregado && nuevoEstado != EstadoServicio.Cancelado)
+                        throw new ModelException("Este servicio solo puede ser Entregado o Cancelado!");
+                    break;
+                }
+                case EstadoServicio.Entregado:
+                {
+                    throw new ModelException("Este servicio no puede cambiar de estado!");
+                }
+                case EstadoServicio.Cancelado:
+                {
+                    throw new ModelException("Este servicio no puede cambiar de estado!");
+                }
+            }
+
+            //Si paso las reglas, actualizar.
+            cotizacion.Servicios[indexServicio-1].Estado = nuevoEstado;
+
+            /*
+             No se actualiza via el metodo Anadir de esta clase, ya que no se quiere anadir
+             una nueva version de la cotizacion, si no, actualizar un dato de esta que
+             solo les interesa a los usuarios del sistema y no a quien recibe la cotizacion.
+             */
+            
+            //Actualizar cotizacion.
+            _repositoryCotizacion.Add(cotizacion);
         }
 
         /// <inheritdoc />

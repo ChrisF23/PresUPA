@@ -58,6 +58,7 @@ namespace Core.Models
             {
                 throw new ModelException("La cantidad del servicio debe ser al menos 1");
             }
+            
 
         }
 
@@ -68,6 +69,12 @@ namespace Core.Models
                 + "Cantidad: " + Cantidad + "\n"
                 + "Costo unidad: $" + CostoUnidad + "\n"
                 + "Sub total: $" + (CostoUnidad*Cantidad);
+        }
+
+        public string ToStringBrief()
+        {
+            return "Descripcion: " + Descripcion + "\n"
+                   + "Estado: " + Estado;
         }
     }
     

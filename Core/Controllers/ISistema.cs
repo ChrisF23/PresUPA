@@ -110,7 +110,7 @@ namespace Core.Controllers
    
         void EditarServicio(Servicio servicio);
     
-        void CambiarEstado(int index, EstadoServicio nuevoEstado);
+        void CambiarEstado(int indexServicio, Cotizacion cotizacion, EstadoServicio nuevoEstado);
 
         void Borrar(int index, string idCotizacion);
         

@@ -5,9 +5,6 @@ using Core.Controllers;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
-//TODO: Implementar la busqueda de cotizaciones (Consola, Sistema).
-//TODO: Completar los demas menus para cada usuario y sus operaciones. --
-//TODO: -- El Menu Director (exceptuando la busqueda y el envio) se encuentra listo.
 //TODO: Documentar.
 //TODO: Eliminar funciones que nunca se usan (Hacerlo al final de todo!).
 //TODO: Con completar la administracion de cotizaciones, el proyecto quedaria (en teoria) terminado.
@@ -30,27 +27,56 @@ namespace Core
             Console.WriteLine("Iniciando la aplicacion...");
             ISistema sistema = Startup.BuildSistema();
             
-            //Creacion de Usuario de prueba:
-            Persona personaDirector = new Persona()
-            {
-                Rut = "19691840K",
-                Nombre = "Christian",
-                Paterno = "Farias",
-                Materno = "Aguila",
-                Email = "christian.farias@alumnos.ucn.cl"
-            };
-
+            //NOTA: Use estos usuarios de prueba:
+            
             Usuario usuarioDirector = new Usuario()
             {
-                Persona = personaDirector,
+                Persona = new Persona()
+                {
+                    Rut = "194460880",
+                    Nombre = "German",
+                    Paterno = "Rojas",
+                    Materno = "Arce",
+                    Email = "garojar97@gmail.com"
+                },
                 Password = "1234",
                 Tipo = TipoUsuario.Director
             };
-
+            
+            Usuario usuarioProductor = new Usuario()
+            {
+                Persona = new Persona()
+                {
+                    Rut = "19691840K",
+                    Nombre = "Christian",
+                    Paterno = "Farias",
+                    Materno = "Aguila",
+                    Email = "christian.farias@alumnos.ucn.cl"
+                },
+                Password = "1234",
+                Tipo = TipoUsuario.Productor
+            };
+            
+            Usuario usuarioSupervisor = new Usuario()
+            {
+                Persona = new Persona()
+                {
+                    Rut = "130144918",
+                    Nombre = "Diego",
+                    Paterno = "Urrutia",
+                    Materno = "Astorga",
+                    Email = "durrutia@ucn.cl"
+                },
+                Password = "1234",
+                Tipo = TipoUsuario.Supervisor
+            };
+            
            
             try
             {
                 sistema.Anadir(usuarioDirector);
+                sistema.Anadir(usuarioProductor);
+                sistema.Anadir(usuarioSupervisor);
             }
             catch (ModelException e)
             {
@@ -58,11 +84,11 @@ namespace Core
                 return;
             }
 
-            int counter = 3;
+            int intentos = 3;
             //Login: Si falla 3 veces en ingresar, el programa termina.
-            while (counter > 0)
+            while (intentos > 0)
             {
-                Console.WriteLine("\n(Intentos: {0})", counter);
+                Console.WriteLine("\n(Intentos: {0})", intentos);
                 Console.WriteLine("Ingrese su rut o email: ");
                 string rutEmail = Console.ReadLine();
                 Console.WriteLine("Ingrese su contrasena: ");
@@ -77,11 +103,11 @@ namespace Core
                 catch (ModelException e)
                 {
                     Console.WriteLine(e.Message);
-                    counter--;
+                    intentos--;
                     continue;    //Vuelve al while.
                 }
 
-                counter = 3;
+                intentos = 3;
                 
                 //Mostrar menu segun usuario:
                 Console.WriteLine("\n--------------------------");
