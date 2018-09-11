@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Core;
 using Core.Controllers;
 using Core.DAO;
@@ -36,75 +37,99 @@ namespace TestCore.Controllers
         public void AllMethodsTest()
         {
             _output.WriteLine("Starting Sistema test ...");
-            Sistema sistema = Startup.BuildSistema();
-            
+            Sistema _sistema = Startup.BuildSistema();
+
             // Insert null
             {
-                Assert.Throws<ModelException>(() => sistema.Anadir((Persona)null));
+                Assert.Throws<ModelException>(() => _sistema.Anadir((Persona) null));
             }
-            
-            // Insert persona
+
+            Cliente cliente = new Cliente()
             {
-                _output.WriteLine("Testing insert ..");
-                Persona persona = new Persona()
+                Persona = new Persona()
                 {
-                    Rut = "130144918",
-                    Nombre = "Diego",
-                    Paterno = "Urrutia",
-                    Materno = "Astorga",
-                    Email = "durrutia@ucn.cl"
-                };
+                    Rut = "194460880",
+                    Email = "garojar@hotmail.com",
+                    Nombre = "German",
+                    Paterno = "Rojo",
+                    Materno = "Arce"
+                },
+                Tipo = TipoCliente.UnidadInterna
 
-                sistema.Anadir(persona);
-            }
-            
-            // GetPersonas
+
+            };
+
+
+
+
+
+            //------------------------------------------------------------------------------
+            //    Operaciones de Sistema: Cotizaciones (OS_COXXX)
+            //------------------------------------------------------------------------------
+
+            // Añadir cotizacion
             {
-                _output.WriteLine("Testing getPersonas ..");
-                Assert.NotEmpty(sistema.GetPersonas());
+                var cotizacionAnadir = Assert.Throws<ModelException>(() => _sistema.Anadir((Cotizacion) null));
+                Assert.Equal("La cotizacion es null", cotizacionAnadir.Message);
+                _output.WriteLine("Cotizacion añadida es null --> Success");
             }
-            
-            // Buscar persona
+
+            //Borrar cotizacion
             {
-                _output.WriteLine("Testing Find ..");
-                Assert.NotNull(sistema.BuscarPersona("durrutia@ucn.cl"));
-                Assert.NotNull(sistema.BuscarPersona("130144918"));
+                var cotizacionBorrar = Assert.Throws<ModelException>(() => _sistema.Borrar(null));
+                Assert.Equal("El identificador ingresado fue nulo.", cotizacionBorrar.Message);
+                _output.WriteLine("id Cotizacion  es null --> Success");
             }
-            
-            // Busqueda de usuario
+
+
+            //Editar cotizacion
             {
-                Exception usuarioNoExiste =
-                    Assert.Throws<ModelException>(() => sistema.Login("notfound@ucn.cl", "durrutia123"));
-                Assert.Equal("Usuario no encontrado", usuarioNoExiste.Message);
+                var cotizacionEditar = Assert.Throws<ModelException>(() => _sistema.Editar((Cotizacion) null));
+                Assert.Equal("La cotizacion es null.", cotizacionEditar.Message);
+                _output.WriteLine("Cotizacion a editar es null --> Success");
+            }
+
+            // Cambiar estado cotizacion
+            {
+                var cambioEstado =
+                    Assert.Throws<ModelException>(() => _sistema.CambiarEstado(null, EstadoCotizacion.Aprobada));
+                Assert.Equal("El identificador ingresado fue nulo.", cambioEstado.Message);
+                _output.WriteLine("id cotizacion Cambiar estado es null --> Success");
+            }
+
+            // Buscar Cotizacion
+            {
+                var cotizacionBuscar = Assert.Throws<ModelException>(() => _sistema.BuscarCotizacion((string) null));
+                Assert.Equal("El identificador ingresado fue nulo.", cotizacionBuscar.Message);
+                _output.WriteLine("id Cotizacion en BuscarCotizacion es null --> Success");
+
+                List<Servicio> list = new List<Servicio>();
+                list.Add(new Servicio()
+                {
+                    Cantidad = 2,
+                    CostoUnidad = 3000,
+                    Descripcion = "test servicio"
+                });
                 
-                Exception usuarioNoExistePersonaSi =
-                    Assert.Throws<ModelException>(() => sistema.Login("durrutia@ucn.cl", "durrutia123"));
-                Assert.Equal("Existe la Persona pero no tiene credenciales de acceso", usuarioNoExistePersonaSi.Message);                
+                _sistema.Anadir(new Cotizacion()
+                {
+                    Titulo = "Testing",
+                    Descripcion = "Cotizacion de testing",
+                    Cliente = cliente,
+                    CostoTotal = 2000000,
+                    Servicios = list
+                });
+               
+                
+
+                cotizacionBuscar = Assert.Throws<ModelException>(() => _sistema.BuscarCotizacion("id"));
+                Assert.Equal("No se encontro la cotizacion con el identificador ingresado.", cotizacionBuscar.Message);
+                _output.WriteLine("id no existe en el repositorio cotizacion --> Success");
+
             }
             
-            // Insertar usuario
-            {
-                Persona persona = sistema.BuscarPersona("durrutia@ucn.cl");
-                Assert.NotNull(persona);
-                _output.WriteLine("Persona: {0}", Utils.ToJson(persona));
-                
-                sistema.Anadir(persona, "durrutia123");
-            }
-
-            // Busqueda de usuario
-            {
-                Exception usuarioExisteWrongPassword =
-                    Assert.Throws<ModelException>(() => sistema.Login("durrutia@ucn.cl", "este no es mi password"));
-                Assert.Equal("Password no coincide", usuarioExisteWrongPassword.Message);
-
-                Usuario usuario = sistema.Login("durrutia@ucn.cl", "durrutia123");
-                Assert.NotNull(usuario);
-                _output.WriteLine("Usuario: {0}", Utils.ToJson(usuario));
-
-            }
-
         }
-        
+
 
     }
 }

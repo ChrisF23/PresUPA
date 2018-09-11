@@ -140,6 +140,10 @@ namespace Core.Controllers
         /// <inheritdoc />
         public void Editar(Cotizacion cotizacion)
         {
+            if (cotizacion == null)
+            {
+                throw new ModelException("La cotizacion es null.");
+            }
             //Se recibe por parametro la cotizacion ya editada.
             //Si la cotizacion recibida es distinta a la obtenida por su identificador,
             //Se procede a agregar la nueva version en la base de datos.
@@ -262,7 +266,7 @@ namespace Core.Controllers
 
 
         /// <inheritdoc />
-        IList<Cotizacion> ISistema.GetCotizaciones()
+        public IList<Cotizacion> GetCotizaciones()
         {
             if (_repositoryCotizacion.GetAll().Count == 0)
             {
