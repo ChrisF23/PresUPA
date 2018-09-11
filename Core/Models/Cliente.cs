@@ -22,7 +22,7 @@ namespace Core.Models
         /// </summary>
         public TipoCliente Tipo { get; set; }
         
-       
+        /// <inheritdoc cref="BaseEntity.Validate"/>
         public override void Validate()
         {
             if (Persona == null)

@@ -80,6 +80,9 @@ namespace Core.Models
             }
         }
 
+        /// <summary>
+        /// Valida cada uno de sus servicios.
+        /// </summary>
         private void ValidarMisServicios()
         {
             foreach (Servicio servicio in Servicios)
@@ -135,6 +138,10 @@ namespace Core.Models
             
         }
 
+        /// <summary>
+        /// Retorna la representacion del objeto Cotizacion a string.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return
@@ -148,6 +155,24 @@ namespace Core.Models
                 "\nEstado: " + Estado;
         }
 
+        /// <summary>
+        /// Retorna un resumen de la representacion del objeto Cotizacion a string.
+        /// </summary>
+        /// <returns></returns>
+        public string ToStringBrief()
+        {
+            return "Identificador: " + Identificador +
+                   "\nTitulo: " + Titulo +
+                   "\nDescripcion: " + Descripcion +
+                   "\nRut Cliente: "+ Cliente.Persona.Rut +
+                   "\nCantidad de Servicios: "+ Servicios.Count + 
+                   "\nEstado: " + Estado;
+        }
+        
+        /// <summary>
+        /// Retorna la representacion de los servicios de esta cotizacion a string.
+        /// </summary>
+        /// <returns></returns>
         public string MisServiciosToString()
         {
             string ts = "";
@@ -163,17 +188,8 @@ namespace Core.Models
 
             return ts;
         }
-
-        public string ToStringBrief()
-        {
-            return "Identificador: " + Identificador +
-                   "\nTitulo: " + Titulo +
-                   "\nDescripcion: " + Descripcion +
-                   "\nRut Cliente: "+ Cliente.Persona.Rut +
-                   "\nCantidad de Servicios: "+ Servicios.Count + 
-                   "\nEstado: " + Estado;
-        }
     }
+    
     /// <summary>
     /// Enumeracion con los distintos estados de la cotizacion
     /// </summary>

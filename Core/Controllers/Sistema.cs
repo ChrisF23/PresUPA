@@ -10,32 +10,46 @@ using Core.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 
-//TODO : Implementar las operaciones restantes y verificar la funcionalidad
 namespace Core.Controllers
 {
-    
     /// <summary>
-    /// Implementacion de la interface ISistema.
+    /// Implementacion de los contratos de la interface ISistema.
     /// </summary>
     public sealed class Sistema : ISistema
     {
-        
-        public string EmailUpa { get; }
-
         // Patron Repositorio, generalizado via Generics
         // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/
+        
+        /// <inheritdoc />
+        public string EmailUpa { get; }
+
+        /// <summary>
+        /// Repositorio de Personas.
+        /// </summary>
         private readonly IRepository<Persona> _repositoryPersona;
 
+        /// <summary>
+        /// Repositorio de Usuarios.
+        /// </summary>
         private readonly IRepository<Usuario> _repositoryUsuario;
 
+        /// <summary>
+        /// Repositorio de Cotizaciones.
+        /// </summary>
         private readonly IRepository<Cotizacion> _repositoryCotizacion;
 
+        /// <summary>
+        /// Repositorio de Clientes.
+        /// </summary>
         private readonly IRepository<Cliente> _repositoryCliente;
 
+        /// <summary>
+        /// Variable que guarda el numero de la ultima cotizacion ingresada a la base de datos. Usa 300 por defecto.
+        /// </summary>
         private int _lastCotizacionNumber;
 
         /// <summary>
-        /// Inicializa los repositorios internos de la clase.
+        /// Constructor: Inicializa los repositorios internos de la clase.
         /// </summary>
         public Sistema(
             IRepository<Persona> repositoryPersona, 
@@ -64,7 +78,6 @@ namespace Core.Controllers
             
             
             //Determinar el numero de la ultima cotizacion guardada.
-
             var x = _repositoryCotizacion.GetAll();
             if (x.Count > 0)
             {
@@ -240,7 +253,6 @@ namespace Core.Controllers
             return cotizacion;
         }
         
-        
         public IList<Cotizacion> BuscarCotizaciones(string busqueda)
         {
             if (string.IsNullOrEmpty(busqueda))
@@ -264,7 +276,74 @@ namespace Core.Controllers
             
             return resultados;
         }
+        
+        /// <inheritdoc />
+        public void EnviarCotizacion(Cotizacion cotizacionEnviar, string remitente, string emailPassword,
+            string destinatario, MailMessage mailMessage)
+        {
+            if (String.IsNullOrEmpty(emailPassword))
+            {
+                throw new ModelException("La contrasena ingresada esta vacia.");
+            }
 
+            if (String.IsNullOrEmpty(remitente))
+            {
+                throw new ModelException("El Email del remitente esta vacio.");
+            }
+
+            if (String.IsNullOrEmpty(destinatario))
+            {
+                throw new ModelException("El Email del destinatario esta vacio.");
+            }
+
+            if (mailMessage == null)
+            {
+                throw new ModelException("El Email fue nulo.");
+            }
+
+            //Es necesario especificar el servidor!
+
+            string servidor = null;
+
+            //Si el remitente pertenece a los dominios de ucn.cl, usar servidor gmail.
+            if (remitente.EndsWith("ucn.cl"))
+            {
+                servidor = "smtp.gmail.com";
+            }
+
+            //Si no, buscar en los servidores guardados.
+            else
+            {
+                foreach (string server in Utils.SmtpServers)
+                {
+                    if (remitente.Contains(server))
+                    {
+                        servidor = "smtp." + server + ".com";
+                        break;
+                    }
+                }
+            }
+
+            //Si no se pudo encontrar un servidor, lanzar excepcion.
+            if (servidor == null)
+                throw new SmtpException("El sistema no conoce el servidor remitente.");
+
+            SmtpClient client = new SmtpClient(servidor, 587)
+            {
+                Credentials = new NetworkCredential(remitente, emailPassword),
+                EnableSsl = true
+            };
+
+            mailMessage.From = new MailAddress(remitente);
+            mailMessage.To.Add(destinatario);
+            //mensaje.    IsBodyHtml = false;
+            //mensaje.Body = "body";
+
+            client.Send(mailMessage);
+            
+            //Si no lanzo excepcion al enviar el mensaje, cambiar el estado de la cotizacion a Enviada.
+            cotizacionEnviar.Estado = EstadoCotizacion.Enviada;
+        }
 
         /// <inheritdoc />
         IList<Cotizacion> ISistema.GetCotizaciones()
@@ -366,7 +445,10 @@ namespace Core.Controllers
             return usuario;
         }
 
-
+        //------------------------------------------------------------------------------
+        //    Operaciones de Sistema: Persona (OS_PEXXX)
+        //------------------------------------------------------------------------------
+        
         /// <inheritdoc />
         public void Anadir(Persona persona)
         {
@@ -381,12 +463,6 @@ namespace Core.Controllers
         }
 
         /// <inheritdoc />
-        public IList<Persona> GetPersonas()
-        {
-            return _repositoryPersona.GetAll();
-        }
-
-        /// <inheritdoc />
         public Persona BuscarPersona(string rutEmail)
         {
             if (rutEmail == null)
@@ -395,7 +471,6 @@ namespace Core.Controllers
             return _repositoryPersona.GetAll(p => p.Rut.Equals(rutEmail) || p.Email.Equals(rutEmail)).FirstOrDefault();
         }
 
-        
         //------------------------------------------------------------------------------
         //    Operaciones de Sistema: Servicio (OS_SEXXX)
         //------------------------------------------------------------------------------
@@ -420,12 +495,6 @@ namespace Core.Controllers
         }
         
         /// <inheritdoc />
-        public void EditarServicio(Servicio servicio)
-        {
-            throw new NotImplementedException();
-        }
-        
-        /// <inheritdoc />
         public void CambiarEstado(int indexServicio, Cotizacion cotizacion, EstadoServicio nuevoEstado)
         {
             /*
@@ -438,8 +507,6 @@ namespace Core.Controllers
              * 6.- Una cotizacion que esta terminada, no puede cambiar de estado.
              */
             
-            
-
             switch (cotizacion.Servicios[indexServicio-1].Estado)
             {
                 case EstadoServicio.SinIniciar:
@@ -495,30 +562,6 @@ namespace Core.Controllers
             _repositoryCotizacion.Add(cotizacion);
         }
 
-        /// <inheritdoc />
-        public void Borrar(int index, string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void Desplegar(int index, string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void DesplegarTodos(string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public IList<Servicio> GetServicios(string idCotizacion)
-        {
-            throw new NotImplementedException();
-        }
-
         //------------------------------------------------------------------------------
         //    Operaciones de Sistema: Cliente (OS_CLXXX)
         //------------------------------------------------------------------------------
@@ -546,8 +589,6 @@ namespace Core.Controllers
             _repositoryCliente.Add(cliente);
         }
 
-
-
         /// <inheritdoc />
         public Cliente BuscarCliente(string rut)
         {
@@ -572,84 +613,5 @@ namespace Core.Controllers
             return cliente;
         }
         
-        /// <inheritdoc />
-        public void Desplegar(string rut)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        IList<Cliente> ISistema.GetClientes()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EnviarEmail(Cotizacion cotizacionEnviar, string remitente, string emailPassword,
-            string destinatario, MailMessage mailMessage)
-        {
-            if (String.IsNullOrEmpty(emailPassword))
-            {
-                throw new ModelException("La contrasena ingresada esta vacia.");
-            }
-
-            if (String.IsNullOrEmpty(remitente))
-            {
-                throw new ModelException("El Email del remitente esta vacio.");
-            }
-
-            if (String.IsNullOrEmpty(destinatario))
-            {
-                throw new ModelException("El Email del destinatario esta vacio.");
-            }
-
-            if (mailMessage == null)
-            {
-                throw new ModelException("El Email fue nulo.");
-            }
-
-            //Es necesario especificar el servidor!
-
-            string servidor = null;
-
-            //Si el remitente pertenece a los dominios de ucn.cl, usar servidor gmail.
-            if (remitente.EndsWith("ucn.cl"))
-            {
-                servidor = "smtp.gmail.com";
-            }
-
-            //Si no, buscar en los servidores guardados.
-            else
-            {
-                foreach (string server in Utils.SmtpServers)
-                {
-                    if (remitente.Contains(server))
-                    {
-                        servidor = "smtp." + server + ".com";
-                        break;
-                    }
-                }
-            }
-
-            //Si no se pudo encontrar un servidor, lanzar excepcion.
-            if (servidor == null)
-                throw new SmtpException("El sistema no conoce el servidor remitente.");
-
-            SmtpClient client = new SmtpClient(servidor, 587)
-            {
-                Credentials = new NetworkCredential(remitente, emailPassword),
-                EnableSsl = true
-            };
-
-            mailMessage.From = new MailAddress(remitente);
-            mailMessage.To.Add(destinatario);
-            //mensaje.    IsBodyHtml = false;
-            //mensaje.Body = "body";
-
-            client.Send(mailMessage);
-            
-            //Si no lanzo excepcion al enviar el mensaje, cambiar el estado de la cotizacion a Enviada.
-            cotizacionEnviar.Estado = EstadoCotizacion.Enviada;
-        }
-
     }
 }

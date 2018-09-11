@@ -5,10 +5,6 @@ using Core.Controllers;
 using Core.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
-//TODO: Documentar.
-//TODO: Eliminar funciones que nunca se usan (Hacerlo al final de todo!).
-//TODO: Con completar la administracion de cotizaciones, el proyecto quedaria (en teoria) terminado.
-
 namespace Core
 {
     /// <summary>

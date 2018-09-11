@@ -57,12 +57,13 @@ namespace TestCore.Controllers
 
                 sistema.Anadir(persona);
             }
-            
+            /* Este metodo ya no existe. TODO: Borrar.
             // GetPersonas
             {
                 _output.WriteLine("Testing getPersonas ..");
                 Assert.NotEmpty(sistema.GetPersonas());
             }
+            */
             
             // Buscar persona
             {
